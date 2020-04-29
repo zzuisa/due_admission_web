@@ -19,7 +19,39 @@
           <img class="page-login--logo" src="./image/logo@2x.png" />
           <!-- 表单 -->
           <div class="page-login--form">
-            <el-card shadow="never">
+            <el-card shadow="never" v-if="r_register" class="transition-box">
+              <el-form
+                ref="registerForm"
+                label-position="top"
+                :rules="rules"
+                :model="formRegister"
+                size="default"
+              >
+                <el-form-item prop="username">
+                  <el-input type="text" v-model="formRegister.username" placeholder="用户名">
+                    <i slot="prepend" class="fa fa-user-circle-o"></i>
+                  </el-input>
+                </el-form-item>
+                <el-form-item prop="email">
+                  <el-input type="text" v-model="formRegister.email" placeholder="邮箱">
+                    <i slot="prepend" class="fa fa-keyboard-o"></i>
+                  </el-input>
+                </el-form-item>
+                <el-form-item prop="password">
+                  <el-input type="password" v-model="formRegister.password" placeholder="密码">
+                    <i slot="prepend" class="fa fa-keyboard-o"></i>
+                  </el-input>
+                </el-form-item>
+                <el-form-item prop="password">
+                  <el-input type="password" v-model="formRegister.rePassword" placeholder="重复密码">
+                    <i slot="prepend" class="fa fa-keyboard-o"></i>
+                  </el-input>
+                </el-form-item>
+
+                <el-button size="default" @click="submit(2)" type="primary" class="button-login">注册</el-button>
+              </el-form>
+            </el-card>
+            <el-card shadow="never" v-if="r_login" class="transition-box">
               <el-form
                 ref="loginForm"
                 label-position="top"
@@ -45,14 +77,14 @@
                     </template>
                   </el-input>
                 </el-form-item>
-                <el-button size="default" @click="submit" type="primary" class="button-login">登录</el-button>
+                <el-button size="default" @click="submit(1)" type="primary" class="button-login">登录</el-button>
               </el-form>
             </el-card>
             <p class="page-login--options" flex="main:justify cross:center">
               <span>
                 <d2-icon name="question-circle" />忘记密码
               </span>
-              <span>注册用户</span>
+              <span @click="changeText()">{{hintText}}</span>
             </p>
             <!-- 快速登录按钮 -->
             <el-button
@@ -92,15 +124,19 @@
 
 <script>
 import dayjs from "dayjs";
-import util from '@/libs/util.js'
+import util from "@/libs/util.js";
 import { mapActions } from "vuex";
-import { menuHeader, menuAside2 } from '@/config/menu'
-
-
+import { frameInRoutes, router2 } from "@/config/routes";
+import { menuHeader, menuAside2,menuAside } from "@/config/menu";
+import $http from "axios";
+import request from "@/utils/request";
 export default {
   data() {
     return {
+      r_login: true,
+      r_register: false,
       timeInterval: null,
+      hintText: "注册用户",
       time: dayjs().format("HH:mm:ss"),
       // 快速选择用户
       dialogVisible: false,
@@ -127,6 +163,12 @@ export default {
         password: "admin",
         code: "v9am"
       },
+      formRegister: {
+        username: "",
+        password: "",
+        rePassword: "",
+        email: ""
+      },
       // 校验
       rules: {
         username: [
@@ -150,6 +192,23 @@ export default {
     refreshTime() {
       this.time = dayjs().format("HH:mm:ss");
     },
+    changeText() {
+      let _this = this;
+      if (_this.hintText == "注册用户") {
+        _this.hintText = "立即登录";
+        console.log("@@@");
+        _this.formRegister = {};
+        _this.r_login = false;
+        _this.r_register = true;
+      } else {
+        console.log("@@@2");
+
+        _this.hintText = "注册用户";
+        _this.formLogin = {};
+        _this.r_login = true;
+        _this.r_register = false;
+      }
+    },
     /**
      * @description 接收选择一个用户快速登录的事件
      * @param {Object} user 用户信息
@@ -157,40 +216,93 @@ export default {
     handleUserBtnClick(user) {
       this.formLogin.username = user.username;
       this.formLogin.password = user.password;
-      this.submit();
+      this.submit(1);
     },
     /**
      * @description 提交表单
      */
     // 提交登录信息
-    submit() {
-      this.$refs.loginForm.validate(valid => {
-        if (valid) {
-          // 登录
-          // 注意 这里的演示没有传验证码
-          // 具体需要传递的数据请自行修改代码
-          this.login({
-            username: this.formLogin.username,
-            password: this.formLogin.password
-          }).then(() => {
-            // 重定向对象不存在则返回顶层路径
-            let token = util.cookies.get("token");
-            if (token != undefined) {
-              this.$store.commit("d2admin/menu/asideSet", menuAside2);
-            }
-            this.$router.replace(this.$route.query.redirect || "/");
-          });
-        } else {
-          // 登录表单校验失败
-          this.$message.error("表单校验失败");
-        }
-      });
+    submit(key) {
+      if (key == 1) {
+        this.$refs.loginForm.validate(valid => {
+          if (valid) {
+            let url = `/api/member/login`;
+            request({
+              url,
+              method: "post",
+              data: this.formLogin
+            })
+              .then(res => {
+                this.$message({
+                  message: "登录成功",
+                  type: "success"
+                });
+                let path = "/"
+                if (res.content.member.username == "admin") {
+                  this.$store.commit("d2admin/menu/asideSet", menuAside2);
+                  path = "/admin"
+                } else {
+                  this.$store.commit("d2admin/menu/asideSet", menuAside);
+                }
+                // this.$store.commit("d2admin/page/init", router2);
+                  console.log("@@")
+
+                util.cookies.set("user", res.content.member);
+                util.cookies.set("token", res.content.token);
+                if (res.content.student != undefined) {
+                  util.cookies.set("student", res.content.student);
+                }
+                this.formLogin = {};
+                console.log("user:", res.content);
+                this.$router.push({ path: path });
+              })
+              .catch(e => {
+                this.$message.error(e);
+              });
+          } else {
+            // 登录表单校验失败
+            this.$message.error("表单校验失败");
+          }
+        });
+      } else if (key == 2) {
+        this.$refs.registerForm.validate(valid => {
+          if (valid) {
+            // 登录
+            // 注意 这里的演示没有传验证码
+            // 具体需要传递的数据请自行修改代码
+            delete this.formRegister.rePassword;
+            let url = `/api/member/join`;
+            request({
+              url,
+              method: "post",
+              data: this.formRegister
+            }).then(res => {
+              this.formRegister = {};
+              this.$message({
+                message: "注册成功,需要激活才可登录",
+                type: "success"
+              });
+            });
+          } else {
+            // 登录表单校验失败
+            this.$message.error("表单校验失败");
+          }
+        });
+      }
     }
   }
 };
 </script>
 
 <style lang="scss">
+.transition-box {
+  margin-bottom: 10px;
+  border-radius: 4px;
+  background-color: #409eff;
+  text-align: center;
+  color: #fff;
+  box-sizing: border-box;
+}
 .page-login {
   @extend %unable-select;
   $backgroundColor: #f0f2f5;
@@ -268,6 +380,9 @@ export default {
       color: $color-primary;
       margin-bottom: 15px;
       font-weight: bold;
+      span {
+        cursor: pointer;
+      }
     }
     .page-login--quick {
       width: 100%;

@@ -76,7 +76,8 @@ export default {
       async function logout() {
         // 删除cookie
         util.cookies.remove('token')
-        util.cookies.remove('uuid')
+        util.cookies.remove('user')
+        util.cookies.remove('student')
         // 清空 vuex 用户信息
         await dispatch('d2admin/user/set', {}, {
           root: true

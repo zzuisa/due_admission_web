@@ -14,24 +14,33 @@ import util from '@/libs/util.ice';
 // },
 
 const asideMenuConfig = [
+  // {
+  //   name: 'Workplace',
+  //   icon: 'folder-o',
+  //   path:'/workplace'
+  //   // children: [
+  //   //   { name: 'WorkSpace', path: '/workspace' },
+  //   //   { name: 'Background', path: '/demo2' },
+  //   // ],
+  // },
   {
-    name: 'Home',
+    name: 'Profile',
     icon: 'folder-o',
-    children: [
-      { name: 'Subject', path: '/demo1' },
-      { name: 'Background', path: '/demo2' },
-    ],
+    path:'/profile'
+  },  {
+    name: 'Settings',
+    icon: 'folder-o',
+    path:'/settings'
   },
+
 ];
 
 const asideMenuConfig2 = [
   {
-    name: 'Home',
+    name: 'StudentManagement',
     icon: 'folder-o',
-    children: [
-      { name: 'Subject', path: '/demo1' },
-    ],
-  },
+    path:'/admin'
+  }, 
 ];
 
 // 顶栏菜单配置

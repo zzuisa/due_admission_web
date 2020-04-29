@@ -13,7 +13,7 @@ import util from '@/libs/util.js'
 import routes from '@/config/routes'
 
 Vue.use(VueRouter)
-const whiteList = ['/login', '/index', '/', '/table', '/auth', '/401','/404'] // no redirect whitelist
+const whiteList = ['/login','/index', '/401','/404'] // no redirect whitelist
 
 // 导出路由 在 main.js 里使用
 const router = new VueRouter({
@@ -42,7 +42,6 @@ router.beforeEach((to, from, next) => {
       if (whiteList.indexOf(to.path) !== -1) {
         // in the free login whitelist, go directly
         next()
-        console.log("ssssssss:",to)
 
       }else{
          // 没有登录的时候跳转到登录界面

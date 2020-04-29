@@ -6,8 +6,10 @@ import util from '@/libs/util.ice';
 import Index from '@/pages/Index';
 import Login from '@/pages/Login'
 import Error404 from '@/pages/Error404';
-import Demo1 from '@/pages/Demo1';
-import Demo2 from '@/pages/Demo2';
+import Workplace  from '@/pages/Dashboard';
+import Admin from '@/pages/Admin';
+import Center from '@/pages/account/Center';
+import Settings from '@/pages/account/Settings';
 import HeaderAside from '@/layouts/HeaderAside';
 
 // 如果不指定 name 字段，会根据 path 生成 name = page-demo1
@@ -25,14 +27,17 @@ const routerConfig = [
     title: 'Home',
     component: HeaderAside,
     children: [
-      { path: 'demo1', component: Demo1 },
-      { path: 'demo2', component: Demo2 },
+      // { path: 'demo2', component: Demo2 },
       // keep the name param
-      { path: '', component: Index, name: 'index' },
+      // { path: 'workplace', component: Workplace, name: 'Workplace' },
+      { path: '/', component: Center, name: 'Workplace' },
+      { path: 'profile', component: Center, name: 'Center' },
+      { path: 'settings', component: Settings, name: 'Settings' },
     ],
   },
   { path: '*', component: Error404 },
   { path: '/index', component: Index },
+
 ];
 
 const routerConfig2 = [
@@ -41,13 +46,14 @@ const routerConfig2 = [
     title: 'Home',
     component: HeaderAside,
     children: [
-      { path: 'demo1', component: Demo1,title: 'Home', },
       // keep the name param
-      { path: '', component: Index, name: 'index' },
+      { path: 'admin', component: Admin, name: 'Admin' },
+      { path: 'workplace', component: Workplace, name: 'Workplace' },
+
     ],
   },
   { path: '*', component: Error404 },
-  { path: '/index', component: Index },
+  // { path: '/admin', component: Index },
 ];
 
 // 不参与菜单显示的
