@@ -6,14 +6,14 @@
         :bodyStyle="{ padding: '16px 0', height: '100%' }"
         :style="{ height: '100%' }"
       >
-        <el-tabs v-model="active" tab-position="left">
-          <el-tab-pane label="完善信息" style="margin:20px">
+        <el-tabs @tab-click="sendcmd" v-model="active" tab-position="left">
+          <el-tab-pane :label="$t('message.student.settings.basic_info')" style="margin:20px">
             <Base />
           </el-tab-pane>
-          <el-tab-pane label="进阶信息">
-            <BaseForm />
+          <el-tab-pane :label="$t('message.student.settings.advance_info')">
+            <BaseForm ref="basef" />
           </el-tab-pane>
-          <el-tab-pane label="新消息通知">
+          <el-tab-pane :label="$t('message.student.settings.new_notification')">
             <a-empty />
           </el-tab-pane>
         </el-tabs>
@@ -24,7 +24,9 @@
 
 <script>
 import Base from "./BaseSetting";
+import util from "@/libs/util.js";
 import BaseForm from "./BasicForm";
+import i18n from "@/i18n";
 export default {
   components: { Base, BaseForm },
   name: "Setting",
@@ -60,12 +62,21 @@ export default {
   },
   mounted() {
     this.updateMenu();
-    console.log();
+    let account = JSON.parse(util.cookies.get("user"));
+    if (account.username == "admin") {
+      this.$router.push({ path: "/admin" });
+    }
     if (this.$router.history.current.hash.indexOf("#") != -1) {
       this.active = this.$router.history.current.hash.split("#")[1];
     }
   },
   methods: {
+    sendcmd(e) {
+      console.log(e);
+      if (e.index == 1) {
+        this.$refs.basef.init(); // 方法2:直接调用
+      }
+    },
     onOpenChange(openKeys) {
       this.openKeys = openKeys;
     },

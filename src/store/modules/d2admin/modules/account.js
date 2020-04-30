@@ -8,7 +8,7 @@ import store from '@/store/index'
 import {
   AccountLogin
 } from '@api/sys.login'
-
+import i18n from '@/i18n'
 export default {
   namespaced: true,
   actions: {
@@ -92,9 +92,9 @@ export default {
         commit('d2admin/gray/set', true, {
           root: true
         })
-        MessageBox.confirm('注销当前账户吗?  打开的标签页和用户设置将会被保存。', '确认操作', {
-            confirmButtonText: '确定注销',
-            cancelButtonText: '放弃',
+        MessageBox.confirm(i18n.t('message.student.login.logout_tip'), i18n.t('message.student.login.confirm_to_logout'), {
+            confirmButtonText: i18n.t('message.student.login.confirm_to_logout'),
+            cancelButtonText: i18n.t('message.student.login.cancel'),
             type: 'warning'
           })
           .then(() => {
@@ -108,7 +108,7 @@ export default {
               root: true
             })
             Message({
-              message: '放弃注销用户'
+              message: i18n.t('message.student.login.cancel_tip')
             })
           })
       } else {

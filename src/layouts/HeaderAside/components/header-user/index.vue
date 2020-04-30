@@ -1,9 +1,9 @@
 <template>
   <el-dropdown size="small" class="d2-mr">
-    <span class="btn-text">{{info.username ? `你好 ${info.username}` : '未登录'}}</span>
+    <span class="btn-text">{{info.username ? `${ $t('message.common.hello')},  ${info.username}` : $t('message.common.no_login')}}</span>
     <el-dropdown-menu slot="dropdown">
       <el-dropdown-item @click.native="logOff">
-        <d2-icon name="power-off" class="d2-mr-5" />注销
+        <d2-icon name="power-off" class="d2-mr-5" />{{$t('message.common.logout')}}
       </el-dropdown-item>
     </el-dropdown-menu>
   </el-dropdown>

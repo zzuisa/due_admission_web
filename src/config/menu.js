@@ -26,63 +26,38 @@ const asideMenuConfig = [
   {
     name: 'Profile',
     icon: 'folder-o',
-    path:'/profile'
-  },  {
+    path: '/profile'
+  }, {
     name: 'Settings',
     icon: 'folder-o',
-    path:'/settings'
+    path: '/settings'
   },
 
 ];
 
-const asideMenuConfig2 = [
-  {
-    name: 'StudentManagement',
-    icon: 'folder-o',
-    path:'/admin'
-  }, 
-];
+const asideMenuConfig2 = [{
+  name: 'StudentManagement',
+  icon: 'folder-o',
+  path: '/admin'
+}, ];
 
 // 顶栏菜单配置
 // ice 不会修改 headerMenuConfig
 // 如果你需要功能开发之前就配置出菜单原型，可以只设置 name 字段
 // D2Admin 会自动添加不重复 id 生成菜单，并在点击时提示这是一个临时菜单
-const headerMenuConfig = [
-  {
-    name: '空菜单',
-    icon: 'flask',
-    children: [
-      {
-        name: 'menu 1',
-        children: [
-          {
-            name: 'menu 1-1',
-            children: [{ name: 'menu 1-1-1' }, { name: 'menu 1-1-2' }],
-          },
-
-          { name: 'menu 1-2' },
-        ],
-      },
-
-      { name: 'menu 2' },
-      { name: 'menu 3' },
-    ],
-  },
-
-  {
-    name: '演示页面',
+const headerMenuConfig = [{
+    name: 'Home',
     icon: 'folder-o',
-    children: [
-      {
-        name: '演示 1',
-        path: '/demo1',
-      },
-
-      {
-        name: '演示 2',
-        path: '/demo2',
-      },
-    ],
+    path: '/index'
+  },
+  {
+    name: 'Profile',
+    icon: 'folder-o',
+    path: '/profile'
+  }, {
+    name: 'Settings',
+    icon: 'folder-o',
+    path: '/settings'
   },
 ];
 

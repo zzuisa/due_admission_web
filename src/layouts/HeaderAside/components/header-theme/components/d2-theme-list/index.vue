@@ -26,13 +26,13 @@
           type="success"
           icon="el-icon-check"
           round>
-          已激活
+          {{$t('message.common.activated')}}
         </el-button>
         <el-button
           v-else
           round
           @click="handleSelectTheme(scope.row.name)">
-          使用
+          {{$t('message.common.use')}}
         </el-button>
       </template>
     </el-table-column>

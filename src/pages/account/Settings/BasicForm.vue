@@ -3,7 +3,7 @@
     <a-row :gutter="16">
       <a-col :md="24" :lg="16">
         <a-form layout="vertical">
-          <div style="margin-bottom: 16px" v-if="profile.nationality=='china'">
+          <div style="margin-bottom: 16px" v-if="profile.nationality=='China'">
             <a-row :gutter="24">
               <a-col span="12">
                 <a-input v-model="infoForm.cet4" addonBefore="CRT-4" />
@@ -15,7 +15,7 @@
               </a-col>
             </a-row>
           </div>
-          <a-form-item label="德语成绩">
+          <a-form-item :label="$t('message.student.settings.ger_exam')">
             <a-select v-model="infoForm.gerExam" defaultValue="B1" style="width: 120px">
               <a-select-option value="A1">A1</a-select-option>
               <a-select-option value="A2">A2</a-select-option>
@@ -25,20 +25,26 @@
               <a-select-option value="C2">C2</a-select-option>
             </a-select>
           </a-form-item>
-          <a-form-item v-if="profile.nationality=='china'" :required="false">
-            <a-input v-model="infoForm.apsid" addonBefore="APS组号" />
+          <a-form-item v-if="profile.nationality=='China'" :required="false">
+            <a-input v-model="infoForm.apsid" :addonBefore="$t('message.student.settings.apsid')" />
           </a-form-item>
-          <a-form-item v-if="profile.nationality=='china'" label="APS状态">
-            <a-select v-model="infoForm.apsPassed" defaultValue="正在进行" style="width: 120px">
-              <a-select-option value="正在进行">正在进行</a-select-option>
-              <a-select-option value="已通过">已通过</a-select-option>
-              <a-select-option value="未通过">未通过</a-select-option>
+          <a-form-item
+            v-if="profile.nationality=='China'"
+            :label="$t('message.student.settings.aps_passed')"
+          >
+            <a-select v-model="infoForm.apsPassed" defaultValue="Ongoing" style="width: 120px">
+              <a-select-option value="Ongoing">{{$t('message.student.settings.status1')}}</a-select-option>
+              <a-select-option value="passed">{{$t('message.student.settings.status2')}}</a-select-option>
+              <a-select-option value="failed">{{$t('message.student.settings.status3')}}</a-select-option>
             </a-select>
           </a-form-item>
-          <el-divider content-position="right">文件上传</el-divider>
+          <el-divider content-position="right">{{$t('message.student.settings.file_upload')}}</el-divider>
 
           <a-descriptions title="User Info" layout="horizontal" :column="1" bordered>
-            <a-descriptions-item v-if="profile.nationality=='china'" label="APS证明">
+            <a-descriptions-item
+              v-if="profile.nationality=='China'"
+              :label="$t('message.student.settings.aps_auth_file')"
+            >
               <div class="clearfix">
                 <a-upload
                   name="file"
@@ -61,7 +67,7 @@
                 >{{ uploading ? 'Uploading' : 'Start Upload' }}</a-button>-->
               </div>
             </a-descriptions-item>
-            <a-descriptions-item label="德语考试证明">
+            <a-descriptions-item :label="$t('message.student.settings.exam_auth_file')">
               <div class="clearfix">
                 <a-upload
                   name="file"
@@ -84,7 +90,7 @@
                 >{{ uploading ? 'Uploading' : 'Start Upload' }}</a-button>-->
               </div>
             </a-descriptions-item>
-            <a-descriptions-item label="护照">
+            <a-descriptions-item :label="$t('message.student.settings.passport')">
               <div class="clearfix">
                 <a-upload
                   name="file3"
@@ -111,7 +117,7 @@
           <el-divider content-position="right"></el-divider>
 
           <a-form-item>
-            <a-button @click="submitForm" type="primary">提交</a-button>
+            <a-button @click="submitForm" type="primary">{{$t('message.student.settings.submit')}}</a-button>
           </a-form-item>
         </a-form>
       </a-col>
@@ -151,74 +157,61 @@ export default {
     };
   },
   mounted() {
-    let c = util.cookies.get("student");
-    let domain = "http://localhost:888";
-    let thumb =
-      "https://www.pngitem.com/pimgs/m/499-4997293_pdf-file-icon-png-transparent-png.png";
-    if (c != undefined) {
-      let student = JSON.parse(c);
-      this.profile = student;
-      console.log("student:", student);
-      this.lastName = student.name.split(" ")[0];
-      this.firstName = student.name.split(" ")[1];
-      this.infoForm.gender = student.gender;
-      this.infoForm.nationality = student.nationality;
-      this.infoForm.birthday = student.birthday;
-      this.infoForm.phone = student.phone;
-      this.infoForm.address = student.address;
-      this.infoForm = student;
-      let _f = [
-        {
-          uid: "-1",
-          name: "aps",
-          status: "done",
-          url: domain + student.apsAuthFile,
-          thumbUrl: thumb
-        }
-      ];
-      if (student.apsAuthFile != null && student.apsAuthFile != "") {
-        this.file = _f;
-      }
-      let _f2 = [
-        {
-          uid: "-1",
-          name: "ger",
-          status: "done",
-          url: domain + student.examAuthFile,
-          thumbUrl: thumb
-        }
-      ];
-      if (student.examAuthFile != null && student.examAuthFile != "") {
-        this.gerFile = _f2;
-      }
-      let _f3 = [
-        {
-          uid: "-1",
-          name: "passport",
-          status: "done",
-          url: domain + student.passport,
-          thumbUrl: thumb
-        }
-      ];
-      if (student.passport != null && student.passport != "") {
-        this.passportFile = _f3;
-      }
-
-      // if (this.file.length == 1) {
-      //   this.file.pop();
-      // }
-      // this.file.push(domain + student.apsAuthFile);
-      // if (this.passportFile.length == 1) {
-      //   this.file.pop();
-      // }
-      // this.passportFile.push(domain + student.passport);
-      // if (this.gerFile.length == 1) {
-      //   this.file.pop();
-      // }
-      // this.gerFile.push(domain + student.examAuthFile);
-    }
+    this.init();
   },
+
   methods: {
+    init() {
+      console.log("base init");
+      let domain = "http://localhost:888";
+      let thumb =
+        "https://www.pngitem.com/pimgs/m/499-4997293_pdf-file-icon-png-transparent-png.png";
+      let c = util.cookies.get("student");
+      if (c != undefined) {
+        let student = JSON.parse(c);
+        this.profile = student;
+        console.log("student:", student);
+        this.lastName = student.name.split(" ")[0];
+        this.firstName = student.name.split(" ")[1];
+        this.infoForm = student;
+        let _f = [
+          {
+            uid: "-1",
+            name: "aps",
+            status: "done",
+            url: domain + student.apsAuthFile,
+            thumbUrl: thumb
+          }
+        ];
+        if (student.apsAuthFile != null && student.apsAuthFile != "") {
+          this.file = _f;
+        }
+        let _f2 = [
+          {
+            uid: "-1",
+            name: "ger",
+            status: "done",
+            url: domain + student.examAuthFile,
+            thumbUrl: thumb
+          }
+        ];
+        if (student.examAuthFile != null && student.examAuthFile != "") {
+          this.gerFile = _f2;
+        }
+        let _f3 = [
+          {
+            uid: "-1",
+            name: "passport",
+            status: "done",
+            url: domain + student.passport,
+            thumbUrl: thumb
+          }
+        ];
+        if (student.passport != null && student.passport != "") {
+          this.passportFile = _f3;
+        }
+      }
+    },
     handleChange(info) {
       this.handleUpload();
     },

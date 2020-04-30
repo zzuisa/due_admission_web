@@ -10,9 +10,16 @@ import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/antd.css';
 import moment from 'moment';
 import 'vxe-table/lib/index.css'
+import XEClipboard from 'xe-clipboard'
 import VXETable from 'vxe-table'
+import enUS from 'vxe-table/lib/locale/lang/en-US'
+import XEUtils from 'xe-utils/methods/xe-utils'
 Vue.use(VXETable)
+Vue.use(XEClipboard)
 
+VXETable.setup({
+  i18n: key => XEUtils.get(enUS, key)
+})
 // 给 vue 实例挂载全局窗口对象
 Vue.prototype.$XModal = VXETable.modal
 Vue.config.productionTip = false;
@@ -50,7 +57,6 @@ import d2Admin from '@/plugin/d2admin'
 Vue.use(i18n)
 Vue.use(ElementUI);
 
-i18n.locale = "en"
 // 菜单和路由设置
 import router from './router'
 import {

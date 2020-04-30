@@ -10,8 +10,10 @@
       <div class="page-login--content" flex="dir:top main:justify cross:center box:justify">
         <div class="page-login--content-header">
           <p class="page-login--content-header-motto">
-            时间是一切财富中最宝贵的财富。
-            <span>—— 德奥弗拉斯多</span>
+          <!-- {{时间是一切财富中最宝贵的财富。}}
+            <span>—— 德奥弗拉斯多</span> -->
+            {{$t('message.student.login.saying')}}
+            <span>{{$t('message.student.login.saying_author')}}</span>
           </p>
         </div>
         <div class="page-login--content-main" flex="dir:top main:center cross:center">
@@ -28,27 +30,27 @@
                 size="default"
               >
                 <el-form-item prop="username">
-                  <el-input type="text" v-model="formRegister.username" placeholder="用户名">
+                  <el-input type="text" v-model="formRegister.username" :placeholder="$t('message.common.username')">
                     <i slot="prepend" class="fa fa-user-circle-o"></i>
                   </el-input>
                 </el-form-item>
                 <el-form-item prop="email">
-                  <el-input type="text" v-model="formRegister.email" placeholder="邮箱">
+                  <el-input type="text" v-model="formRegister.email" :placeholder="$t('message.common.email')">
                     <i slot="prepend" class="fa fa-keyboard-o"></i>
                   </el-input>
                 </el-form-item>
                 <el-form-item prop="password">
-                  <el-input type="password" v-model="formRegister.password" placeholder="密码">
+                  <el-input type="password" v-model="formRegister.password" :placeholder="$t('message.common.password')">
                     <i slot="prepend" class="fa fa-keyboard-o"></i>
                   </el-input>
                 </el-form-item>
                 <el-form-item prop="password">
-                  <el-input type="password" v-model="formRegister.rePassword" placeholder="重复密码">
+                  <el-input type="password" v-model="formRegister.rePassword" :placeholder="$t('message.common.re_password')">
                     <i slot="prepend" class="fa fa-keyboard-o"></i>
                   </el-input>
                 </el-form-item>
 
-                <el-button size="default" @click="submit(2)" type="primary" class="button-login">注册</el-button>
+                <el-button size="default" @click="submit(2)" type="primary" class="button-login">{{$t('message.student.login.register_user')}}</el-button>
               </el-form>
             </el-card>
             <el-card shadow="never" v-if="r_login" class="transition-box">
@@ -60,29 +62,29 @@
                 size="default"
               >
                 <el-form-item prop="username">
-                  <el-input type="text" v-model="formLogin.username" placeholder="用户名">
+                  <el-input type="text" v-model="formLogin.username" :placeholder="$t('message.common.username')">
                     <i slot="prepend" class="fa fa-user-circle-o"></i>
                   </el-input>
                 </el-form-item>
                 <el-form-item prop="password">
-                  <el-input type="password" v-model="formLogin.password" placeholder="密码">
+                  <el-input type="password" v-model="formLogin.password" :placeholder="$t('message.common.password')">
                     <i slot="prepend" class="fa fa-keyboard-o"></i>
                   </el-input>
                 </el-form-item>
                 <el-form-item prop="code">
                   <el-input type="text" v-model="formLogin.code" placeholder="- - - -">
-                    <template slot="prepend">验证码</template>
+                    <template slot="prepend">{{$t('message.student.login.Captcha')}}</template>
                     <template slot="append">
                       <img class="login-code" src="./image/login-code.png" />
                     </template>
                   </el-input>
                 </el-form-item>
-                <el-button size="default" @click="submit(1)" type="primary" class="button-login">登录</el-button>
+                <el-button size="default" @click="submit(1)" type="primary" class="button-login">{{$t('message.student.login.login')}}</el-button>
               </el-form>
             </el-card>
             <p class="page-login--options" flex="main:justify cross:center">
               <span>
-                <d2-icon name="question-circle" />忘记密码
+                <d2-icon name="question-circle" />{{$t('message.student.login.forget_password')}}
               </span>
               <span @click="changeText()">{{hintText}}</span>
             </p>
@@ -92,19 +94,19 @@
               size="default"
               type="info"
               @click="dialogVisible = true"
-            >快速选择用户（测试功能）</el-button>
+            >{{$t('message.student.login.quick_login.tip')}}</el-button>
           </div>
         </div>
         <div class="page-login--content-footer">
           <p class="page-login--content-footer-options">
-            <a href="#">帮助</a>
-            <a href="#">隐私</a>
-            <a href="#">条款</a>
+            <a href="#">{{$t('message.student.login.footer_help')}}</a>
+            <a href="#">{{$t('message.student.login.footer_privacy')}}</a>
+            <a href="#">{{$t('message.student.login.footer_terms')}}</a>
           </p>
           <p class="page-login--content-footer-copyright">
             Copyright
-            <d2-icon name="copyright" />2018 D2 Projects 开源组织出品
-            <a href="https://github.com/FairyEver">@FairyEver</a>
+            <d2-icon name="copyright" />{{$t('message.student.login.footer.words')}}
+            <a href="https://gitee.com/zzuisa">@Ao</a>
           </p>
         </div>
       </div>
@@ -127,8 +129,9 @@ import dayjs from "dayjs";
 import util from "@/libs/util.js";
 import { mapActions } from "vuex";
 import { frameInRoutes, router2 } from "@/config/routes";
-import { menuHeader, menuAside2,menuAside } from "@/config/menu";
+import { menuHeader, menuAside2, menuAside } from "@/config/menu";
 import $http from "axios";
+import i18n from '@/i18n'
 import request from "@/utils/request";
 export default {
   data() {
@@ -136,25 +139,20 @@ export default {
       r_login: true,
       r_register: false,
       timeInterval: null,
-      hintText: "注册用户",
+      hintText: i18n.t('message.student.login.register_user'),
       time: dayjs().format("HH:mm:ss"),
       // 快速选择用户
       dialogVisible: false,
       users: [
         {
-          name: "管理员",
+          name: i18n.t('message.student.login.quick_login.admin'),
           username: "admin",
           password: "admin"
         },
         {
-          name: "编辑",
-          username: "editor",
-          password: "editor"
-        },
-        {
-          name: "用户1",
-          username: "user1",
-          password: "user1"
+          name: i18n.t('message.student.login.quick_login.user1'),
+          username: "jy",
+          password: "123"
         }
       ],
       // 表单
@@ -172,14 +170,24 @@ export default {
       // 校验
       rules: {
         username: [
-          { required: true, message: "请输入用户名", trigger: "blur" }
+          { required: true, message: i18n.t('message.student.login.hin1'), trigger: "blur" }
         ],
-        password: [{ required: true, message: "请输入密码", trigger: "blur" }],
-        code: [{ required: true, message: "请输入验证码", trigger: "blur" }]
+        password: [{ required: true, message: i18n.t('message.student.login.hin2'), trigger: "blur" }],
+        code: [{ required: true, message: i18n.t('message.student.login.hin3'), trigger: "blur" }]
       }
     };
   },
   mounted() {
+    let c = util.cookies.get("user");
+    console.log("user", c);
+    if (c != undefined) {
+      let user = JSON.parse(c);
+      if (user.username != "admin") {
+        this.$router.push({ path: '/' });
+      } else {
+        this.$router.push({ path: '/admin' });
+      }
+    }
     this.timeInterval = setInterval(() => {
       this.refreshTime();
     }, 1000);
@@ -194,8 +202,8 @@ export default {
     },
     changeText() {
       let _this = this;
-      if (_this.hintText == "注册用户") {
-        _this.hintText = "立即登录";
+      if (_this.hintText == i18n.t('message.student.login.register_user')) {
+        _this.hintText = i18n.t('message.student.login.login_right_now');
         console.log("@@@");
         _this.formRegister = {};
         _this.r_login = false;
@@ -203,7 +211,7 @@ export default {
       } else {
         console.log("@@@2");
 
-        _this.hintText = "注册用户";
+        _this.hintText = i18n.t('message.student.login.register_user');
         _this.formLogin = {};
         _this.r_login = true;
         _this.r_register = false;
@@ -234,18 +242,18 @@ export default {
             })
               .then(res => {
                 this.$message({
-                  message: "登录成功",
+                  message: i18n.t('message.student.login.success'),
                   type: "success"
                 });
-                let path = "/"
+                let path = "/";
                 if (res.content.member.username == "admin") {
                   this.$store.commit("d2admin/menu/asideSet", menuAside2);
-                  path = "/admin"
+                  path = "/admin";
                 } else {
                   this.$store.commit("d2admin/menu/asideSet", menuAside);
                 }
                 // this.$store.commit("d2admin/page/init", router2);
-                  console.log("@@")
+                console.log("@@");
 
                 util.cookies.set("user", res.content.member);
                 util.cookies.set("token", res.content.token);
@@ -261,7 +269,7 @@ export default {
               });
           } else {
             // 登录表单校验失败
-            this.$message.error("表单校验失败");
+            this.$message.error();
           }
         });
       } else if (key == 2) {
@@ -279,13 +287,13 @@ export default {
             }).then(res => {
               this.formRegister = {};
               this.$message({
-                message: "注册成功,需要激活才可登录",
+                message: i18n.t('message.student.login.success_register'),
                 type: "success"
               });
             });
           } else {
             // 登录表单校验失败
-            this.$message.error("表单校验失败");
+            this.$message.error(i18n.t('message.student.login.form_verify_failed'));
           }
         });
       }

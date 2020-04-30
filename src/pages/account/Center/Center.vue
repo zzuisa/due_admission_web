@@ -9,25 +9,25 @@
                 <img :src="user.avatar" />
               </div>
               <div class="username">{{ user.name }}</div>
-              <div class="bio">海纳百川，有容乃大</div>
+              <div class="bio">Be tolerant to diversity, tolerance is a virtue</div>
             </div>
             <div class="account-center-detail">
               <p>
-                <i class="title"></i>交互专家
+                <i class="title"></i>Interaction expert
               </p>
               <p>
-                <i class="group"></i>蚂蚁金服－某某某事业群－某某平台部－某某技术部－UED
+                <i class="group"></i>Ant Financial-XX business group-XX platform department-XX technology department-DUE
               </p>
               <p>
                 <i class="address"></i>
-                <span>浙江省</span>
-                <span>杭州市</span>
+                <span>Zhe Jiang</span>
+                <span>Hang Zhou</span>
               </p>
             </div>
             <a-divider />
 
             <div class="account-center-tags">
-              <div class="tagsTitle">标签</div>
+              <div class="tagsTitle">{{$t('message.student.profile.tag')}}</div>
               <div>
                 <template v-for="(tag, index) in tags">
                   <a-tooltip v-if="tag.length > 20" :key="tag" :title="tag">
@@ -63,7 +63,7 @@
             <a-divider :dashed="true" />
 
             <div class="account-center-team">
-              <div class="teamTitle">团队</div>
+              <div class="teamTitle">{{$t('message.student.profile.team')}}</div>
               <a-spin :spinning="teamSpinning">
                 <div class="members">
                   <a-row>
@@ -99,7 +99,7 @@
 
 <script>
 import { AppPage, ArticlePage, ProjectPage } from "./page";
-
+import i18n from "@/i18n";
 import { mapGetters } from "vuex";
 import util from "@/libs/util.js";
 export default {
@@ -111,7 +111,7 @@ export default {
   },
   data() {
     return {
-      tags: ["很有想法的", "专注设计", "辣~", "大长腿", "川妹子", "海纳百川"],
+      tags: i18n.t("message.student.profile.tags").split(","),
       user: {},
 
       account: {},
@@ -124,15 +124,15 @@ export default {
       tabListNoTitle: [
         {
           key: "article",
-          tab: "我的文件"
+          tab: i18n.t("message.student.profile.file")
         },
         {
           key: "app",
-          tab: "查看消息"
+          tab: i18n.t("message.student.profile.notification")
         },
         {
           key: "project",
-          tab: "操作日志"
+          tab: i18n.t("message.student.profile.log")
         }
       ],
       noTitleKey: "article"
@@ -145,7 +145,7 @@ export default {
     if (s != undefined) {
       user = JSON.parse(s);
       this.user = user;
-      console.log('usss',this.user)
+      console.log("usss", user);
     }
     let account = JSON.parse(util.cookies.get("user"));
     if (account.username == "admin") {
@@ -155,10 +155,10 @@ export default {
     this.account = account;
     if (this.user.avatar == null || this.user.avatar == "") {
       this.user.avatar = "https://preview.pro.loacg.com/avatar2.jpg";
-    } else if( this.user.avatar = "https://preview.pro.loacg.com/avatar2.jpg"){
-
-    }
-    else {
+    } else if (
+      this.user.avatar == "https://preview.pro.loacg.com/avatar2.jpg"
+    ) {
+    } else {
       this.user.avatar = domain + this.user.avatar;
     }
   },

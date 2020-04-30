@@ -38,19 +38,19 @@
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item command="left">
             <d2-icon name="arrow-left" class="d2-mr-10"/>
-            关闭左侧
+            {{$t('message.common.close_tip2')}}
           </el-dropdown-item>
           <el-dropdown-item command="right">
             <d2-icon name="arrow-right" class="d2-mr-10"/>
-            关闭右侧
+            {{$t('message.common.close_tip3')}}
           </el-dropdown-item>
           <el-dropdown-item command="other">
             <d2-icon name="times" class="d2-mr-10"/>
-            关闭其它
+            {{$t('message.common.close_tip4')}}
           </el-dropdown-item>
           <el-dropdown-item command="all">
             <d2-icon name="times-circle" class="d2-mr-10"/>
-            全部关闭
+            {{$t('message.common.close_tip1')}}
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -60,6 +60,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
+import i18n from '@/i18n'
 export default {
   components: {
     D2Contextmenu: () => import('../contextmenu'),
@@ -71,13 +72,13 @@ export default {
       contentmenuX: 0,
       contentmenuY: 0,
       contextmenuListIndex: [
-        { icon: 'times-circle', title: '关闭全部', value: 'all' }
+        { icon: 'times-circle', title: i18n.t('message.common.close_tip1'), value: 'all' }
       ],
       contextmenuList: [
-        { icon: 'arrow-left', title: '关闭左侧', value: 'left' },
-        { icon: 'arrow-right', title: '关闭右侧', value: 'right' },
-        { icon: 'times', title: '关闭其它', value: 'other' },
-        { icon: 'times-circle', title: '关闭全部', value: 'all' }
+        { icon: 'arrow-left', title: i18n.t('message.common.close_tip2'), value: 'left' },
+        { icon: 'arrow-right', title: i18n.t('message.common.close_tip3'), value: 'right' },
+        { icon: 'times', title: i18n.t('message.common.close_tip4'), value: 'other' },
+        { icon: 'times-circle', title: i18n.t('message.common.close_tip1'), value: 'all' }
       ],
       tagName: '/'
     }

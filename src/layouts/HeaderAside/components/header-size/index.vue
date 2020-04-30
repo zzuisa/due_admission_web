@@ -12,16 +12,17 @@
 </template>
 
 <script>
+import i18n from '@/i18n'
 import { mapState, mapMutations, mapActions } from 'vuex'
 export default {
   name: 'd2-header-size',
   data () {
     return {
       options: [
-        { label: '默认', value: 'default' },
-        { label: '中', value: 'medium' },
-        { label: '小', value: 'small' },
-        { label: '最小', value: 'mini' }
+        { label: i18n.t('message.common.default'), value: 'default' },
+        { label: i18n.t('message.common.m'), value: 'medium' },
+        { label: i18n.t('message.common.min'), value: 'small' },
+        { label: i18n.t('message.common.mmin'), value: 'mini' }
       ]
     }
   },
@@ -42,7 +43,8 @@ export default {
           // 由于已经加载过设置 需要清空缓存设置
           this.pageKeepAliveClean()
           // 由于已经加载过设置 需要刷新此页面
-          this.$router.replace('/refresh')
+          // this.$router.replace('/refresh')
+          this.$router.go(0);
         } else {
           // 这个情况在刷新页面时触发
           this.$ELEMENT.size = val

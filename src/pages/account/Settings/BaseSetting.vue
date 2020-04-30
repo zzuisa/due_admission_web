@@ -2,50 +2,68 @@
   <div class="account-settings-info-view" style="max-width:1300px;margin:0 auto">
     <a-row :gutter="16">
       <a-col :md="24" :lg="16">
-        <a-form layout="vertical">
+        <el-form :model="infoForm" ref="infoForm">
           <div style="margin-bottom: 16px">
             <a-row :gutter="24">
               <a-col span="12">
-                <a-input v-model="lastName" addonBefore="姓氏" defaultValue="Zhang" />
+                <a-input :disabled="profile.saved==='y'" v-model="lastName" :addonBefore="$t('message.student.settings.lastname')" />
               </a-col>
               <a-col span="12">
                 <a-form-item>
-                  <a-input v-model="firstName" addonBefore="名字" defaultValue="San" />
+                  <a-input v-model="firstName" :disabled="profile.saved==='y'" :addonBefore="$t('message.student.settings.firstname')" />
                 </a-form-item>
               </a-col>
             </a-row>
           </div>
           <a-row :gutter="24">
             <a-col span="8">
-              <a-form-item label="性别">
+              <el-form-item
+                :label="$t('message.student.settings.gender')"
+                prop="gender"
+                :rules="[
+      { required: true, message: $t('message.student.settings.hint')},
+    ]"
+              >
                 <a-select
                   v-model="infoForm.gender"
                   :disabled="profile.saved==='y'"
-                  defaultValue="男"
+                  :defaultValue="$t('message.student.settings.male')"
                   style="width: 120px"
                 >
-                  <a-select-option value="男">男</a-select-option>
-                  <a-select-option value="女">女</a-select-option>
+                  <a-select-option value="m">{{$t('message.student.settings.male')}}</a-select-option>
+                  <a-select-option value="f">{{$t('message.student.settings.female')}}</a-select-option>
                 </a-select>
-              </a-form-item>
+              </el-form-item>
             </a-col>
             <a-col span="16">
-              <a-form-item label="出生日期">
+              <el-form-item
+                :label="$t('message.student.settings.birthday')"
+                prop="birthday"
+                :rules="[
+      { required: true, message: $t('message.student.settings.hint')},
+    ]"
+              >
                 <el-date-picker
                   @change="onDateChange"
                   format="yyyy-MM-dd"
                   v-model="infoForm.birthday"
                   :disabled="profile.saved==='y'"
                   type="date"
-                  placeholder="选择日期"
+                  :placeholder="$t('message.student.settings.date_hint')"
                 ></el-date-picker>
-              </a-form-item>
+              </el-form-item>
             </a-col>
           </a-row>
 
-          <a-form-item label="国籍" :required="false">
+          <el-form-item
+            :label="$t('message.student.settings.nationality')"
+            prop="birthday"
+            :rules="[
+      { required: true, message: $t('message.student.settings.hint')},
+    ]"
+          >
             <el-select
-              placeholder="请选择国籍"
+              :placeholder="$t('message.student.settings.nationality_hint')"
               :disabled="profile.saved==='y'"
               filterable
               style="width: 77.9%"
@@ -56,25 +74,25 @@
                   v-for="item in group.options"
                   :key="item.value"
                   :label="item.label"
-                  :value="item.label"
+                  :value="item.value"
                 >
                   <span style="float: left">{{ item.label }}</span>
                   <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value }}</span>
                 </el-option>
               </el-option-group>
             </el-select>
-          </a-form-item>
-          <a-form-item label="手机号码" :required="false">
+          </el-form-item>
+          <a-form-item :label="$t('message.student.settings.phone')" :required="false">
             <a-input v-model="infoForm.phone" placeholder />
           </a-form-item>
-          <a-form-item label="居住地址" :required="false">
+          <a-form-item :label="$t('message.student.settings.address')" :required="false">
             <a-input v-model="infoForm.address" placeholder />
           </a-form-item>
 
           <a-form-item>
-            <a-button @click="submitForm" type="primary">提交</a-button>
+            <a-button @click="submitForm('infoForm')" type="primary">{{$t('message.student.settings.submit')}}</a-button>
           </a-form-item>
-        </a-form>
+        </el-form>
       </a-col>
       <a-col :md="24" :lg="8" :style="{ minHeight: '180px' }">
         <div class="ant-upload-preview" @click="$refs.modal.edit(1)">
@@ -91,6 +109,7 @@
 </template>
 
 <script>
+import i18n from '@/i18n'
 import AvatarModal from "./AvatarModal";
 import request from "@/utils/request";
 import moment from "moment";
@@ -137,29 +156,26 @@ export default {
   },
   mounted() {
     this.country = country;
-    let c = util.cookies.get("student");
-    if (c != undefined) {
-      let student = JSON.parse(c);
-      this.profile = student;
-      this.lastName = student.name.split(" ")[0];
-      this.firstName = student.name.split(" ")[1];
-      this.infoForm.gender = student.gender;
-      this.infoForm.nationality = student.nationality;
-      this.infoForm.birthday = student.birthday;
-      this.infoForm.phone = student.phone;
-      this.infoForm.address = student.address;
-      this.infoForm = student;
-    }
-    if (this.infoForm.avatar != "" && this.infoForm.avatar != null) {
-      console.log("@", this.infoForm.avatar);
-      this.option.img = this.domain + this.infoForm.avatar;
-    }
+    this.init();
   },
   methods: {
+    init() {
+      let c = util.cookies.get("student");
+      if (c != undefined) {
+        let student = JSON.parse(c);
+        this.profile = student;
+        this.lastName = student.name.split(" ")[0];
+        this.firstName = student.name.split(" ")[1];
+        this.infoForm = student;
+      }
+      if (this.infoForm.avatar != "" && this.infoForm.avatar != null) {
+        console.log("@", this.infoForm.avatar);
+        this.option.img = this.domain + this.infoForm.avatar;
+      }
+    },
     onDateChange(e) {
       this.infoForm.birthday = this.dateToString(e);
-
-      console.log(this.infoForm.birthday )
+      console.log(this.infoForm.birthday);
     },
     setavatar(url) {
       let domain = "http://localhost:888";
@@ -180,32 +196,48 @@ export default {
       return dateTime;
     },
     onChange() {},
-    submitForm() {
+    changee(e) {
+      console.log(e);
+    },
+    submitForm(e) {
       let _this = this;
-      let name = _this.lastName + " " + _this.firstName;
-      _this.infoForm.name = name;
-      let url = "/api/member/new";
-      console.log("u", this.infoForm);
-      request({
-        url,
-        method: "put",
-        data: this.infoForm,
-        headers: {
-          token: util.cookies.get("token"),
-          "Content-Type": "application/json"
+      if (_this.lastName == "" || _this.lastName == null) {
+        this.$message.error("Please fill in lastname");
+        return false;
+      }
+      if (_this.firstName == "" || _this.firstName == null) {
+        this.$message.error("Please fill in firstName");
+        return false;
+      }
+      this.$refs[e].validate(valid => {
+        if (valid) {
+          let name = _this.lastName + " " + _this.firstName;
+          _this.infoForm.name = name;
+          let url = "/api/member/new";
+          request({
+            url,
+            method: "put",
+            data: _this.infoForm,
+            headers: {
+              token: util.cookies.get("token"),
+              "Content-Type": "application/json"
+            }
+          })
+            .then(res => {
+              this.$message({
+                message: $t('message.student.common.success'),
+                type: "success"
+              });
+              util.cookies.set("student", res.content);
+              _this.init();
+            })
+            .catch(e => {
+              this.$message.error(e);
+            });
+        } else {
+          return false;
         }
-      })
-        .then(res => {
-          this.$message({
-            message: "修改成功",
-            type: "success"
-          });
-          util.cookies.set("student", res.content);
-          console.log("res:", res.content);
-        })
-        .catch(e => {
-          this.$message.error(e);
-        });
+      });
     }
   }
 };
