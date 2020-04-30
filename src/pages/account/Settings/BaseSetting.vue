@@ -225,7 +225,7 @@ export default {
           })
             .then(res => {
               this.$message({
-                message: $t('message.student.common.success'),
+                message: i18n.t('message.common.success'),
                 type: "success"
               });
               util.cookies.set("student", res.content);
