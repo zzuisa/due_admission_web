@@ -18,9 +18,9 @@
         </div>
         <div class="page-login--content-main" flex="dir:top main:center cross:center">
           <!-- logo -->
-          <img class="page-login--logo" src="./image/logo@2x.png" />
           <!-- 表单 -->
           <div class="page-login--form">
+          <img class="page-login--logo" src="./image/logo@2x.png" />
             <el-card shadow="never" v-if="r_register" class="transition-box">
               <el-form
                 ref="registerForm"
@@ -105,7 +105,7 @@
           </p>
           <p class="page-login--content-footer-copyright">
             Copyright
-            <d2-icon name="copyright" />{{$t('message.student.login.footer.words')}}
+            <d2-icon name="copyright" />{{$t('message.student.login.footer_words')}}
             <a href="https://gitee.com/zzuisa">@Ao</a>
           </p>
         </div>
@@ -354,13 +354,13 @@ export default {
   }
   // main
   .page-login--logo {
-    width: 240px;
+    width: 360px;
     margin-bottom: 2em;
     margin-top: -2em;
   }
   // 登录表单
   .page-login--form {
-    width: 280px;
+    width: 420px;
     // 卡片
     .el-card {
       margin-bottom: 15px;
@@ -380,6 +380,7 @@ export default {
       border-top-right-radius: 2px;
       border-bottom-right-radius: 2px;
     }
+   
     // 登陆选项
     .page-login--options {
       margin: 0px;

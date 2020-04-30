@@ -4,6 +4,7 @@ import {
   Message
 } from 'element-ui'
 import store from '@/store'
+import i18n from '@/i18n'
 
 // create an axios instance
 const service = axios.create({
@@ -50,14 +51,27 @@ service.interceptors.response.use(
     if (res.code !== 0) {
       if (res.code == 1) {
         console.log("!!!!!!!")
-        window.location.href=("#/login")
+        Message({
+          message: i18n.t('message.error.not_login'),
+          type: 'error',
+          duration: 2 * 1000
+        })
+        window.location.href = ("#/login")
+      }else if(res.code == 2){
+        Message({
+          message: i18n.t('message.error.others'),
+          type: 'error',
+          duration: 2 * 1000
+        })
+      }else if(res.code == 3){
+        Message({
+          message: i18n.t('message.error.not_activate'),
+          type: 'error',
+          duration: 2 * 1000
+        })
       }
 
-      Message({
-        message: res.content || 'Error',
-        type: 'error',
-        duration: 2 * 1000
-      })
+
 
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
       if (res.code === 50008 || res.code === 50012 || res.code === 50014) {

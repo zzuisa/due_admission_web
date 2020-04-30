@@ -13,7 +13,7 @@
             src="https://gw.alipayobjects.com/zos/rmsportal/sfjbOqnsXXJgNCjCzDBL.png"
             size="small"
           />
-          <a :href="href">admin</a> 发布在
+          <a :href="href">admin</a> {{$t('message.student.profile.public')}}
           <a :href="href">{{ href }}</a>
           <em>{{ item.create_time | moment }}</em>
         </div>

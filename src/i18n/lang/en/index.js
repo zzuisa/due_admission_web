@@ -3,6 +3,11 @@ export default {
         // d2admin 经典  简约线条 流星
     message: {
         title: 'Sport Brands',
+        error:{
+            not_login:'Not logged in, or the login credentials have expired, please log in again',
+            not_activate:'Not activated, please check your mailbox and activate before logging in',
+            others:'operation failed'
+        },
         common: {
             home: 'Home',
             no_login: 'Not logged in',
@@ -22,7 +27,6 @@ export default {
             close_tip2:"close left",
             close_tip3:"close right",
             close_tip4:"close others",
-
             default:'default',
             m:'medium',
             min:'min',
@@ -76,6 +80,7 @@ export default {
                 file: 'my files',
                 notification: 'view notifications',
                 log: 'operation logs',
+                public:'public at',
                 tags: "Very thoughtful, Focus on design, Spicy ~, Long legs, Chuanmeizi, Hainaichuan"
             },
             settings: {
@@ -144,13 +149,4 @@ export default {
             
         }
     },
-    placeholder: {
-        enter: 'Please type in your favorite brand'
-    },
-    brands: {
-        nike: 'Nike',
-        adi: 'Adidas',
-        nb: 'New Banlance',
-        ln: 'LI Ning'
-    }
 }

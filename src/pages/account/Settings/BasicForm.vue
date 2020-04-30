@@ -128,6 +128,7 @@
 <script>
 import util from "@/libs/util.js";
 import request from "@/utils/request";
+import i18n from '@/i18n'
 export default {
   name: "BaseForm",
   data() {
@@ -377,7 +378,7 @@ export default {
       })
         .then(res => {
           this.$message({
-            message: "修改成功",
+            message: i18n.t('message.common.success'),
             type: "success"
           });
           util.cookies.set("student", res.content);
