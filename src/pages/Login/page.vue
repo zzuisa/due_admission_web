@@ -170,10 +170,10 @@ export default {
       // 校验
       rules: {
         username: [
-          { required: true, message: i18n.t('message.student.login.hin1'), trigger: "blur" }
+          { required: true, message: i18n.t('message.student.login.hint1'), trigger: "blur" }
         ],
-        password: [{ required: true, message: i18n.t('message.student.login.hin2'), trigger: "blur" }],
-        code: [{ required: true, message: i18n.t('message.student.login.hin3'), trigger: "blur" }]
+        password: [{ required: true, message: i18n.t('message.student.login.hint2'), trigger: "blur" }],
+        code: [{ required: true, message: i18n.t('message.student.login.hint3'), trigger: "blur" }]
       }
     };
   },

@@ -437,7 +437,7 @@ export default {
               if (row.nationality != "China") {
                 return "░░░░";
               }
-              return row.cet6;
+              return row.ger_exam;
             }
           }
         },
