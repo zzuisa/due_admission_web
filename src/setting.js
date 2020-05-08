@@ -2,6 +2,7 @@ import i18n from '@/i18n'
 export default {
   // 快捷键
   // 支持快捷键 例如 ctrl+shift+s
+  domain: 'http://localhost:888',
   hotkey: {
     search: {
       open: 's',

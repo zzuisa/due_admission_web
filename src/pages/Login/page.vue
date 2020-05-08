@@ -125,181 +125,181 @@
 </template>
 
 <script>
-import dayjs from "dayjs";
-import util from "@/libs/util.js";
-import { mapActions } from "vuex";
-import { frameInRoutes, router2 } from "@/config/routes";
-import { menuHeader, menuAside2, menuAside } from "@/config/menu";
-import $http from "axios";
+import dayjs from 'dayjs'
+import util from '@/libs/util.js'
+import { mapActions } from 'vuex'
+import { frameInRoutes, router2 } from '@/config/routes'
+import { menuHeader, menuAside2, menuAside } from '@/config/menu'
+import $http from 'axios'
 import i18n from '@/i18n'
-import request from "@/utils/request";
+import request from '@/utils/request'
 export default {
-  data() {
+  data () {
     return {
       r_login: true,
       r_register: false,
       timeInterval: null,
       hintText: i18n.t('message.student.login.register_user'),
-      time: dayjs().format("HH:mm:ss"),
+      time: dayjs().format('HH:mm:ss'),
       // 快速选择用户
       dialogVisible: false,
       users: [
         {
           name: i18n.t('message.student.login.quick_login.admin'),
-          username: "admin",
-          password: "admin"
+          username: 'admin',
+          password: 'admin'
         },
         {
           name: i18n.t('message.student.login.quick_login.user1'),
-          username: "jy",
-          password: "123"
+          username: 'ao',
+          password: '123'
         }
       ],
       // 表单
       formLogin: {
-        username: "admin",
-        password: "admin",
-        code: "v9am"
+        username: 'admin',
+        password: 'admin',
+        code: 'v9am'
       },
       formRegister: {
-        username: "",
-        password: "",
-        rePassword: "",
-        email: ""
+        username: '',
+        password: '',
+        rePassword: '',
+        email: ''
       },
       // 校验
       rules: {
         username: [
-          { required: true, message: i18n.t('message.student.login.hint1'), trigger: "blur" }
+          { required: true, message: i18n.t('message.student.login.hint1'), trigger: 'blur' }
         ],
-        password: [{ required: true, message: i18n.t('message.student.login.hint2'), trigger: "blur" }],
-        code: [{ required: true, message: i18n.t('message.student.login.hint3'), trigger: "blur" }]
+        password: [{ required: true, message: i18n.t('message.student.login.hint2'), trigger: 'blur' }],
+        code: [{ required: true, message: i18n.t('message.student.login.hint3'), trigger: 'blur' }]
       }
-    };
+    }
   },
-  mounted() {
-    let c = util.cookies.get("user");
-    console.log("user", c);
+  mounted () {
+    let c = util.cookies.get('user')
+    console.log('user', c)
     if (c != undefined) {
-      let user = JSON.parse(c);
-      if (user.username != "admin") {
-        this.$router.push({ path: '/' });
+      let user = JSON.parse(c)
+      if (user.username != 'admin') {
+        this.$router.push({ path: '/' })
       } else {
-        this.$router.push({ path: '/admin' });
+        this.$router.push({ path: '/admin' })
       }
     }
     this.timeInterval = setInterval(() => {
-      this.refreshTime();
-    }, 1000);
+      this.refreshTime()
+    }, 1000)
   },
-  beforeDestroy() {
-    clearInterval(this.timeInterval);
+  beforeDestroy () {
+    clearInterval(this.timeInterval)
   },
   methods: {
-    ...mapActions("d2admin/account", ["login"]),
-    refreshTime() {
-      this.time = dayjs().format("HH:mm:ss");
+    ...mapActions('d2admin/account', ['login']),
+    refreshTime () {
+      this.time = dayjs().format('HH:mm:ss')
     },
-    changeText() {
-      let _this = this;
+    changeText () {
+      let _this = this
       if (_this.hintText == i18n.t('message.student.login.register_user')) {
-        _this.hintText = i18n.t('message.student.login.login_right_now');
-        console.log("@@@");
-        _this.formRegister = {};
-        _this.r_login = false;
-        _this.r_register = true;
+        _this.hintText = i18n.t('message.student.login.login_right_now')
+        console.log('@@@')
+        _this.formRegister = {}
+        _this.r_login = false
+        _this.r_register = true
       } else {
-        console.log("@@@2");
+        console.log('@@@2')
 
-        _this.hintText = i18n.t('message.student.login.register_user');
-        _this.formLogin = {};
-        _this.r_login = true;
-        _this.r_register = false;
+        _this.hintText = i18n.t('message.student.login.register_user')
+        _this.formLogin = {}
+        _this.r_login = true
+        _this.r_register = false
       }
     },
     /**
      * @description 接收选择一个用户快速登录的事件
      * @param {Object} user 用户信息
      */
-    handleUserBtnClick(user) {
-      this.formLogin.username = user.username;
-      this.formLogin.password = user.password;
-      this.submit(1);
+    handleUserBtnClick (user) {
+      this.formLogin.username = user.username
+      this.formLogin.password = user.password
+      this.submit(1)
     },
     /**
      * @description 提交表单
      */
     // 提交登录信息
-    submit(key) {
+    submit (key) {
       if (key == 1) {
         this.$refs.loginForm.validate(valid => {
           if (valid) {
-            let url = `/api/member/login`;
+            let url = `/api/member/login`
             request({
               url,
-              method: "post",
+              method: 'post',
               data: this.formLogin
             })
               .then(res => {
                 this.$message({
                   message: i18n.t('message.student.login.success'),
-                  type: "success"
-                });
-                let path = "/";
-                if (res.content.member.username == "admin") {
-                  this.$store.commit("d2admin/menu/asideSet", menuAside2);
-                  path = "/admin";
+                  type: 'success'
+                })
+                let path = '/'
+                if (res.content.member.username == 'admin') {
+                  this.$store.commit('d2admin/menu/asideSet', menuAside2)
+                  path = '/admin'
                 } else {
-                  this.$store.commit("d2admin/menu/asideSet", menuAside);
+                  this.$store.commit('d2admin/menu/asideSet', menuAside)
                 }
                 // this.$store.commit("d2admin/page/init", router2);
-                console.log("@@");
+                console.log('@@')
 
-                util.cookies.set("user", res.content.member);
-                util.cookies.set("token", res.content.token);
+                util.cookies.set('user', res.content.member)
+                util.cookies.set('token', res.content.token)
                 if (res.content.student != undefined) {
-                  util.cookies.set("student", res.content.student);
+                  util.cookies.set('student', res.content.student)
                 }
-                this.formLogin = {};
-                console.log("user:", res.content);
-                this.$router.push({ path: path });
+                this.formLogin = {}
+                console.log('user:', res.content)
+                this.$router.push({ path: path })
               })
               .catch(e => {
-                this.$message.error(e);
-              });
+                this.$message.error(e)
+              })
           } else {
             // 登录表单校验失败
-            this.$message.error();
+            this.$message.error()
           }
-        });
+        })
       } else if (key == 2) {
         this.$refs.registerForm.validate(valid => {
           if (valid) {
             // 登录
             // 注意 这里的演示没有传验证码
             // 具体需要传递的数据请自行修改代码
-            delete this.formRegister.rePassword;
-            let url = `/api/member/join`;
+            delete this.formRegister.rePassword
+            let url = `/api/member/join`
             request({
               url,
-              method: "post",
+              method: 'post',
               data: this.formRegister
             }).then(res => {
-              this.formRegister = {};
+              this.formRegister = {}
               this.$message({
                 message: i18n.t('message.student.login.success_register'),
-                type: "success"
-              });
-            });
+                type: 'success'
+              })
+            })
           } else {
             // 登录表单校验失败
-            this.$message.error(i18n.t('message.student.login.form_verify_failed'));
+            this.$message.error(i18n.t('message.student.login.form_verify_failed'))
           }
-        });
+        })
       }
     }
   }
-};
+}
 </script>
 
 <style lang="scss">
@@ -380,7 +380,7 @@ export default {
       border-top-right-radius: 2px;
       border-bottom-right-radius: 2px;
     }
-   
+
     // 登陆选项
     .page-login--options {
       margin: 0px;

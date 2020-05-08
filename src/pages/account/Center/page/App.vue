@@ -3,7 +3,11 @@
     <a-list size="large" rowKey="id" :loading="loading" itemLayout="vertical" :dataSource="data">
       <a-list-item :key="item.id" slot="renderItem" slot-scope="item">
         <a-list-item-meta>
-          <a slot="title" href="https://vue.ant.design/">{{ item.event_title }}</a>
+          <a slot="title" href="#">
+            <span>{{ item.event_title }}</span>
+            <a-button v-show="item.isread==='0'" style="float:right" type="primary" size="small" @click="read(item.id)">set as read</a-button>
+          </a>
+
         </a-list-item-meta>
         <div class="description">
           <slot>{{ item.event_content }}</slot>
@@ -13,95 +17,118 @@
             src="https://gw.alipayobjects.com/zos/rmsportal/sfjbOqnsXXJgNCjCzDBL.png"
             size="small"
           />
-          <a :href="href">admin</a> {{$t('message.student.profile.public')}}
-          <a :href="href">{{ href }}</a>
-          <em>{{ item.create_time | moment }}</em>
+          admin {{$t('message.student.profile.public')}}
+          <em>{{ item.create_time }}</em>
         </div>
       </a-list-item>
       <!-- <div slot="footer" v-if="data.length > 0" style="text-align: center; margin-top: 16px;">
       <a-button @click="loadMore" :loading="loadingMore">加载更多</a-button>
       </div>-->
     </a-list>
+    <a-pagination @change="onPagichange" v-model="current" :total="total" showLessItems />
   </div>
 </template>
 
 <script>
-const dataSource = [];
+import util from '@/libs/util.js'
+import request from '@/utils/request'
+import { BB } from './ArticleListContent'
+import i18n from '@/i18n'
+const dataSource = []
 for (let i = 0; i < 11; i++) {
   dataSource.push({
-    title: "Alipay",
+    title: 'Alipay',
     avatar:
-      "https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png",
+      'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
     activeUser: 17,
     newUser: 1700
-  });
+  })
 }
 
-import moment from "moment";
-import util from "@/libs/util.js";
-import request from "@/utils/request";
-import { BB } from "./ArticleListContent";
-
 export default {
-  name: "Article",
+  name: 'Article',
   components: { BB },
-  data() {
+  data () {
     return {
       dataSource,
+      current: 1,
+      total: 1,
       loading: true,
       data: []
-    };
+    }
   },
-  mounted() {
-    this.getList(1);
+  mounted () {
+    this.getList(1)
   },
   methods: {
-    getList(current) {
+    read (id) {
       request({
-        url: `/api/notice/page?current=${current}`,
-        methods: "get",
+        url: `/api/notice/update`,
+        method: 'put',
+        data: {
+          isread: '1',
+          id: id
+        },
         headers: {
-          token: util.cookies.get("token")
+          token: util.cookies.get('token')
         }
       }).then(res => {
-        console.log("res!~~~~", res);
-        this.loading = false;
-        this.data = res.content.records;
-        this.total = res.content.total;
-      });
+        console.log('@@@@@$$$$$$$$$', res)
+        this.getList(this.current)
+        this.$emit('m', res.content)
+        this.$message.success(i18n.t('message.common.success'))
+      })
     },
-    onPagichange(e) {
-      this.getList(e);
+    onPagichange (e) {
+      this.current = e
+      this.getList(e)
+    },
+    getList (current) {
+      request({
+        url: `/api/notice/page?current=${current}`,
+        method: 'get',
+        headers: {
+          token: util.cookies.get('token')
+        }
+      }).then(res => {
+        console.log('res!~~~~', res)
+        this.loading = false
+        this.data = res.content.records
+        this.total = res.content.total
+      })
+    },
+    onPagichange (e) {
+      this.getList(e)
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>
- .description {
-    max-width: 720px;
-    line-height: 22px;
-  }
-  .extra {
-    margin-top: 16px;
-    color: 'black';
-    line-height: 22px;
+.description {
+  max-width: 720px;
+  line-height: 22px;
+}
+.extra {
+  margin-top: 16px;
+  color: "black";
+  line-height: 22px;
 
-    & /deep/ .ant-avatar {
-      position: relative;
-      top: 1px;
-      width: 20px;
-      height: 20px;
-      margin-right: 8px;
-      vertical-align: top;
-    }
-
-    & > em {
-      margin-left: 16px;
-      color: 'grey';
-      font-style: normal;
-    }
+  & /deep/ .ant-avatar {
+    position: relative;
+    top: 1px;
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    vertical-align: top;
   }
+
+  & > em {
+    margin-left: 16px;
+    color: "grey";
+    font-style: normal;
+  }
+}
 .app-list {
   .meta-cardInfo {
     zoom: 1;

@@ -9,11 +9,15 @@
       keep-source
       stripe
       highlight-current-row
+      :tooltip-config="{enabled: true, contentMethod: showTooltipMethod}"
+      show-overflow
       highlight-hover-row
       id="toolbar_demo_1"
+      :row-style="rowStyle"
+      :cell-style="cellStyle"
       :keyboard-config="{isArrow: true}"
       :checkbox-config="{trigger: 'row', highlight: true, range: true}"
-      height="100%"
+      height="100vh"
       :form-config="tableForm"
       @page-change="handlePageChange"
       :pager-config="tablePage"
@@ -21,16 +25,21 @@
       :data="tableData"
       :toolbar="tableToolbar"
       :custom-config="{storage: true}"
+      ref="xGrid"
       @toolbar-button-click="toolbarButtonClickEvent"
       :context-menu="tableMenu"
       @context-menu-click="contextMenuClickEvent"
       @form-submit="getList(1)"
       @cell-click="cellClickEvent"
-    ></vxe-grid>
+    >
+     <template v-slot:toolbar_buttons>
+            <vxe-button @click="$refs.xGrid.commitProxy('save')">保存</vxe-button>
+          </template>
+    </vxe-grid>
 
     <vxe-modal
       v-model="showDetails"
-      title="查看详情"
+      title="Detail"
       width="600"
       height="400"
       :mask="false"
@@ -51,186 +60,286 @@
         <vxe-table-column field="value"></vxe-table-column>
       </vxe-table>
     </vxe-modal>
+    <a-drawer
+      title="Send a new notification"
+      :width="720"
+      :visible="visible"
+      :body-style="{ paddingBottom: '80px' }"
+      @close="onClose"
+    >
+      <a-form :form="form" layout="vertical" hide-required-mark>
+        <a-form-item label="Send to">
+          <a-input :value="nname" :disabled="true" />
+        </a-form-item>
+        <a-row :gutter="16">
+          <a-col :span="20">
+            <a-form-item label="Title">
+              <a-input
+                v-decorator="[
+                  'eventTitle',
+                  {
+                    rules: [{ required: true, message: 'Please enter title' }],
+                  },
+                ]"
+                placeholder="Please enter title"
+              />
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row :gutter="16">
+          <a-col :span="24">
+            <a-form-item label="Content">
+              <a-textarea
+                v-decorator="[
+                  'eventContent',
+                  {
+                    rules: [{ required: true, message: 'Please enter content' }],
+                  },
+                ]"
+                :rows="4"
+                placeholder="please enter content"
+              />
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row>
+          <a-col>
+            <a-switch
+              checked-children="upload file"
+              un-checked-children="upload file"
+              v-model="uswitch"
+            />
+          </a-col>
+          <a-col v-show="uswitch">
+            <a-divider></a-divider>
+            <a-upload
+              name="file"
+              listType="picture-card"
+              :multiple="false"
+              :fileList="file"
+              :remove="handleRemove"
+              @change="handleChange"
+              :beforeUpload="beforeUpload"
+            >
+              <a-icon type="upload" />
+              <a-button style="width:100%">Select File</a-button>
+            </a-upload>
+            <a-input-group size="large">
+              <a-row>
+                <a-col :span="4">
+                  <a-input value="File Type:" :disabled="true" />
+                </a-col>
+                <a-col :span="12">
+                  <a-select
+                    v-model="fileForm.type"
+                    default-value="lucy"
+                    style="width: 220px"
+                    @change="selectChange"
+                  >
+                    <a-select-option value="lucy">Lucy</a-select-option>
+                    <a-select-option value="l">l</a-select-option>
+                  </a-select>
+                </a-col>
+              </a-row>
+            </a-input-group>
+          </a-col>
+        </a-row>
+      </a-form>
+      <div
+        :style="{
+          position: 'absolute',
+          right: 0,
+          bottom: 0,
+          width: '100%',
+          borderTop: '1px solid #e9e9e9',
+          padding: '10px 16px',
+          background: '#fff',
+          textAlign: 'right',
+          zIndex: 1,
+        }"
+      >
+        <a-button :style="{ marginRight: '8px' }" @click="onClose">Cancel</a-button>
+        <a-button type="primary" @click="onSubmit">Submit</a-button>
+      </div>
+    </a-drawer>
   </d2-container>
 </template>
 
 <script>
-const domain = "http://localhost:888";
-import XEClipboard from "xe-clipboard";
-import request from "@/utils/request";
-import util from "@/libs/util.js";
-import i18n from "@/i18n";
+import XEClipboard from 'xe-clipboard'
+import request from '@/utils/request'
+import util from '@/libs/util.js'
+import i18n from '@/i18n'
 export default {
-  data() {
+  data () {
     return {
+      form: this.$form.createForm(this),
+      nid: 1,
+      sid: 100000,
+      nname: '',
       showDetails: false,
       detailData: [],
       tableData: [],
+      uswitch: false,
+      fileForm: {},
       rowdata: {},
+      file: [],
       tableMenu: {
-        className: "my-menus",
+        className: 'my-menus',
         header: {
-          options: [[{ code: "exportAll", name: "export all .csv" }]]
+          options: [[{ code: 'exportAll', name: 'export all .csv' }]]
         },
         body: {
           options: [
             [
               {
-                code: "copy",
-                name: "copy",
-                prefixIcon: "fa fa-copy",
-                className: "my-copy-item"
+                code: 'notify',
+                name: 'notify',
+                prefixIcon: 'vxe-icon--info',
+                className: 'my-copy-item'
+              },
+              {
+                code: 'copy',
+                name: 'copy',
+                prefixIcon: 'fa fa-copy',
+                className: 'my-copy-item'
               }
             ],
             [
               {
-                code: "detail",
-                name: "detail"
+                code: 'detail',
+                name: 'detail'
               },
               {
-                code: "filter",
-                name: "filter",
+                code: 'marked',
+                name: 'marked as read'
+              },
+              {
+                code: 'sort',
+                name: 'sort',
+                prefixIcon: 'fa fa-sort color-blue',
                 children: [
                   {
-                    code: "clearFilter",
-                    name: i18n.t("message.admin.clearFilter")
+                    code: 'clearSort',
+                    name: i18n.t('message.admin.clearSort')
                   },
                   {
-                    code: "filterSelect",
-                    name: i18n.t("message.admin.filterSelect")
+                    code: 'sortAsc',
+                    name: 'asc',
+                    prefixIcon: 'fa fa-sort-alpha-asc color-orange'
+                  },
+                  {
+                    code: 'sortDesc',
+                    name: 'desc',
+                    prefixIcon: 'fa fa-sort-alpha-desc color-orange'
                   }
                 ]
-              },
-              {
-                code: "sort",
-                name: "sort",
-                prefixIcon: "fa fa-sort color-blue",
-                children: [
-                  {
-                    code: "clearSort",
-                    name: i18n.t("message.admin.clearSort")
-                  },
-                  {
-                    code: "sortAsc",
-                    name: "asc",
-                    prefixIcon: "fa fa-sort-alpha-asc color-orange"
-                  },
-                  {
-                    code: "sortDesc",
-                    name: "desc",
-                    prefixIcon: "fa fa-sort-alpha-desc color-orange"
-                  }
-                ]
-              },
-              {
-                code: "print",
-                name: i18n.t("message.admin.print"),
-                disabled: true
               }
             ]
           ]
         },
         footer: {
           options: [
-            [{ code: "clearAll", name: i18n.t("message.admin.clearAll") }]
+            [{ code: 'clearAll', name: i18n.t('message.admin.clearAll') }]
           ]
         }
       },
+      _row: [],
       tableForm: {
         data: {
-          name: "",
-          gender: "",
-          address: "",
-          phone: "",
-          nationality: "",
-          ger_exam: ""
+          name: '',
+          gender: '',
+          address: '',
+          phone: '',
+          nationality: '',
+          ger_exam: ''
         },
-
         items: [
           {
-            field: "name",
-            title: i18n.t("message.admin.name"),
+            field: 'name',
+            title: i18n.t('message.admin.name'),
             itemRender: {
-              name: "input",
-              attrs: { placeholder: i18n.t("message.admin.hint") }
+              name: 'input',
+              attrs: { placeholder: i18n.t('message.admin.hint') }
             }
           },
           {
-            field: "apsid",
-            title: i18n.t("message.admin.apsid"),
+            field: 'apsid',
+            title: i18n.t('message.admin.apsid'),
             itemRender: {
-              name: "input",
-              attrs: { placeholder: i18n.t("message.admin.hint") }
+              name: 'input',
+              attrs: { placeholder: i18n.t('message.admin.hint') }
             }
           },
           {
-            field: "address",
-            title: i18n.t("message.admin.address"),
+            field: 'address',
+            title: i18n.t('message.admin.address'),
             itemRender: {
-              name: "input",
-              attrs: { placeholder: i18n.t("message.admin.hint") }
+              name: 'input',
+              attrs: { placeholder: i18n.t('message.admin.hint') }
             }
           },
           {
-            field: "phone",
-            title: i18n.t("message.admin.phone"),
+            field: 'phone',
+            showOverflow: 'title',
+            title: i18n.t('message.admin.phone'),
             itemRender: {
-              name: "input",
-              attrs: { placeholder: i18n.t("message.admin.hint") }
+              name: 'input',
+              attrs: { placeholder: i18n.t('message.admin.hint') }
             }
           },
 
           {
-            field: "gender",
-            title: i18n.t("message.admin.gender"),
+            field: 'gender',
+            title: i18n.t('message.admin.gender'),
             itemRender: {
-              name: "$select",
+              name: '$select',
               options: [
-                { label: i18n.t("message.common.male"), value: "m" },
-                { label: i18n.t("message.common.female"), value: "f" }
+                { label: i18n.t('message.common.male'), value: 'm' },
+                { label: i18n.t('message.common.female'), value: 'f' }
               ]
             }
           },
           {
-            field: "ger_exam",
-            title: i18n.t("message.admin.german_level"),
+            field: 'ger_exam',
+            title: i18n.t('message.admin.german_level'),
             itemRender: {
-              name: "$select",
+              name: '$select',
               options: [
-                { label: "A1", value: "A1" },
-                { label: "A2", value: "A2" },
-                { label: "B1", value: "B1" },
-                { label: "B2", value: "B2" },
-                { label: "C1", value: "C1" },
-                { label: "C2", value: "C2" }
+                { label: 'A1', value: 'A1' },
+                { label: 'A2', value: 'A2' },
+                { label: 'B1', value: 'B1' },
+                { label: 'B2', value: 'B2' },
+                { label: 'C1', value: 'C1' },
+                { label: 'C2', value: 'C2' }
               ]
             }
           },
           {
-            field: "nationality",
-            title: i18n.t("message.admin.nationality"),
+            field: 'nationality',
+            title: i18n.t('message.admin.nationality'),
             itemRender: {
-              name: "$select",
+              name: '$select',
               options: [
-                { label: "China", value: "China" },
-                { label: "Germany", value: "germany" }
+                { label: 'China', value: 'China' },
+                { label: 'Germany', value: 'germany' }
               ]
             }
           },
           {
             itemRender: {
-              name: "$button",
+              name: '$button',
               props: {
-                content: i18n.t("message.admin.search"),
-                type: "submit",
-                status: "primary"
+                content: i18n.t('message.admin.search'),
+                type: 'submit',
+                status: 'primary'
               }
             }
           },
           {
             itemRender: {
-              name: "$button",
-              props: { content: i18n.t("message.admin.reset"), type: "reset" }
+              name: '$button',
+              props: { content: i18n.t('message.admin.reset'), type: 'reset' }
             }
           }
         ]
@@ -258,45 +367,42 @@ export default {
         //   // body 对象： { removeRecords }
         //   // delete: ({ body }) => XEAjax.post("/api/user/save", body),
         //   // // body 对象： { insertRecords, updateRecords, removeRecords, pendingRecords }
-        //   // save: ({ body }) => XEAjax.post("/api/user/save", body)
+        // save: ({ body }) => {
+        //   this.save()
+        // }
         // }
       },
       tableToolbar: {
         buttons: [
-          { code: "insert_actived", name: i18n.t("message.admin.new") },
+          { code: 'insert_actived', name: i18n.t('message.admin.new') },
           {
-            code: "mark_cancel",
-            name: i18n.t("message.admin.target"),
+            code: 'mark_cancel',
+            name: i18n.t('message.admin.target'),
             dropdowns: [
               {
-                code: "delete",
-                name: i18n.t("message.admin.target1"),
-                type: "text"
+                code: 'delete',
+                name: i18n.t('message.admin.target1'),
+                type: 'text'
               },
               {
-                code: "remove",
-                name: i18n.t("message.admin.target2"),
-                type: "text"
+                code: 'remove',
+                name: i18n.t('message.admin.target2'),
+                type: 'text'
               }
             ]
           },
           {
-            code: "save",
-            name: i18n.t("message.admin.save"),
-            status: "success"
-          },
-          {
-            name: i18n.t("message.admin.data_export"),
+            name: i18n.t('message.admin.data_export'),
             dropdowns: [
               {
-                code: "open_import",
-                name: i18n.t("message.admin.data_export1"),
-                type: "text"
+                code: 'open_import',
+                name: i18n.t('message.admin.data_export1'),
+                type: 'text'
               },
               {
-                code: "open_export",
-                name: i18n.t("message.admin.data_export2"),
-                type: "text"
+                code: 'open_export',
+                name: i18n.t('message.admin.data_export2'),
+                type: 'text'
               }
             ]
           }
@@ -337,125 +443,126 @@ export default {
         zoom: true,
         custom: true
       },
+      visible: false,
+
       tableColumn: [
-        { type: "checkbox", width: 50 },
-        { type: "seq", width: 60 },
-        { field: "name", title: "Name", editRender: { name: "input" } },
-        { field: "gender", title: "Gender", editRender: { name: "input" } },
+        { type: 'checkbox', width: 50 },
+        { type: 'seq', width: 60 },
+        { field: 'name', title: 'Name', editRender: { name: 'input' } },
+        { field: 'gender', title: 'Gender', editRender: { name: 'input' } },
         {
-          field: "nationality",
-          title: "Country",
-          editRender: { name: "input" }
+          field: 'nationality',
+          title: 'Country',
+          editRender: { name: 'input' }
         },
         {
-          field: "phone",
-          title: "Phone",
+          field: 'phone',
+          title: 'Phone',
           width: 80,
-          editRender: { name: "input" }
+          editRender: { name: 'input' }
         },
         {
-          field: "address",
-          title: "Address",
+          field: 'address',
+          title: 'Address',
           width: 100,
-          editRender: { name: "input" }
+          editRender: { name: 'input' }
         },
         {
-          field: "aps_passed",
-          title: "aps status",
+          field: 'aps_passed',
+          title: 'aps status',
           width: 80,
-          editRender: { name: "input" },
+          editRender: { name: 'input' },
           slots: {
             // 使用 JSX 渲染
             default: ({ row }) => {
-              if (row.nationality != "China") {
-                return "░░░░";
-              } else if (row.aps_passed == null || row.aps_passed == "") {
-                console.log("!!~~~", row.aps_auth_file);
+              if (row.nationality != 'China') {
+                return '░░░░'
+              } else if (row.aps_passed == null || row.aps_passed == '') {
                 return [
                   <el-tag type="warning">
-                    {i18n.t("message.admin.no_update")}
+                    {i18n.t('message.admin.no_update')}
                   </el-tag>
-                ];
-              } else if (row.aps_passed == "passed") {
-                return [<el-tag type="success">{row.aps_passed}</el-tag>];
-              } else if (row.aps_passed == "failed") {
-                return [<el-tag type="danger">{row.aps_passed}</el-tag>];
+                ]
+              } else if (row.aps_passed == 'passed') {
+                return [<el-tag type="success">{row.aps_passed}</el-tag>]
+              } else if (row.aps_passed == 'failed') {
+                return [<el-tag type="danger">{row.aps_passed}</el-tag>]
               }
-              return [<el-tag type="warning">{row.aps_passed}</el-tag>];
+              return [<el-tag type="warning">{row.aps_passed}</el-tag>]
             }
           }
         },
         {
-          field: "apsid",
-          title: "aps team id",
-          editRender: { name: "input" },
+          field: 'apsid',
+          title: 'aps team id',
+          editRender: { name: 'input' },
           slots: {
             // 使用 JSX 渲染
             default: ({ row }) => {
-              if (row.nationality != "China") {
-                return "░░░░";
+              if (row.nationality != 'China') {
+                return '░░░░'
               }
-              return row.apsid;
+              return row.apsid
             }
           }
         },
         {
-          field: "cet4",
-          title: "CET-4",
-          editRender: { name: "input" },
+          field: 'cet4',
+          title: 'CET-4',
+          editRender: { name: 'input' },
           slots: {
             // 使用 JSX 渲染
             default: ({ row }) => {
-              if (row.nationality != "China") {
-                return "░░░░";
+              if (row.nationality != 'China') {
+                return '░░░░'
               }
-              return row.cet4;
+              return row.cet4
             }
           }
         },
         {
-          field: "cet6",
-          title: "CET-6",
-          editRender: { name: "input" },
+          field: 'cet6',
+          title: 'CET-6',
+          editRender: { name: 'input' },
           slots: {
             // 使用 JSX 渲染
             default: ({ row }) => {
-              if (row.nationality != "China") {
-                return "░░░░";
+              if (row.nationality != 'China') {
+                return '░░░░'
               }
-              return row.cet6;
+              return row.cet6
             }
           }
         },
         {
-          field: "ger_exam",
-          title: "access exam",
-          editRender: { name: "input" },
+          field: 'ger_exam',
+          title: 'access exam',
+          editRender: { name: 'input' },
           slots: {
             // 使用 JSX 渲染
             default: ({ row }) => {
-              if (row.nationality != "China") {
-                return "░░░░";
+              if (row.nationality != 'China') {
+                return '░░░░'
               }
-              return row.ger_exam;
+              return row.ger_exam
             }
           }
         },
         {
-          field: "aps_auth_file",
-          title: "aps-auth-file",
+          field: 'aps_auth_file',
+          title: 'aps-auth-file',
           slots: {
             // 使用 JSX 渲染
             default: ({ row }) => {
-              let domain = "http://localhost:888";
-              if (row.nationality != "China") {
-                return "░░░░";
-              } else if (row.aps_auth_file == null || row.aps_auth_file == "") {
+              let domain = 'http://localhost:888'
+              if (row.nationality != 'China') {
+                return '░░░░'
+              } else if (row.aps_auth_file == null || row.aps_auth_file == '') {
                 return [
                   <el-tag type="warning">
-                    {i18n.t("message.admin.no_update")}
+                    {i18n.t('message.admin.no_update')}
                   </el-tag>
-                ];
+                ]
               }
               return [
                 <a href={domain + row.aps_auth_file}>
@@ -464,25 +571,25 @@ export default {
                     src="https://www.pngitem.com/pimgs/m/499-4997293_pdf-file-icon-png-transparent-png.png"
                   />
                   <br />
-                  {i18n.t("message.admin.download")}
+                  {i18n.t('message.admin.download')}
                 </a>
-              ];
+              ]
             }
           }
         },
         {
-          field: "exam_auth_file",
-          title: "exam-auth-file",
+          field: 'exam_auth_file',
+          title: 'exam-auth-file',
           slots: {
             // 使用 JSX 渲染
             default: ({ row }) => {
-              let domain = "http://localhost:888";
-              if (row.exam_auth_file == null || row.exam_auth_file == "") {
+              let domain = 'http://localhost:888'
+              if (row.exam_auth_file == null || row.exam_auth_file == '') {
                 return [
                   <el-tag type="warning">
-                    {i18n.t("message.admin.no_update")}
+                    {i18n.t('message.admin.no_update')}
                   </el-tag>
-                ];
+                ]
               }
               return [
                 <a href={domain + row.exam_auth_file}>
@@ -491,26 +598,26 @@ export default {
                     src="https://www.pngitem.com/pimgs/m/499-4997293_pdf-file-icon-png-transparent-png.png"
                   />
                   <br />
-                  {i18n.t("message.admin.download")}
+                  {i18n.t('message.admin.download')}
                 </a>
-              ];
+              ]
             }
           }
         },
         {
-          field: "passport",
-          title: "passport-file",
+          field: 'passport',
+          title: 'passport-file',
           slots: {
             // 使用 JSX 渲染
             default: ({ row }) => {
-              if (row.passport == null || row.passport == "") {
+              if (row.passport == null || row.passport == '') {
                 return [
                   <el-tag type="warning">
-                    {i18n.t("message.admin.no_update")}
+                    {i18n.t('message.admin.no_update')}
                   </el-tag>
-                ];
+                ]
               }
-              let domain = "http://localhost:888";
+              let domain = 'http://localhost:888'
               return [
                 <a href={domain + row.passport}>
                   <a-avatar
@@ -518,17 +625,17 @@ export default {
                     src="https://www.pngitem.com/pimgs/m/499-4997293_pdf-file-icon-png-transparent-png.png"
                   />
                   <br />
-                  {i18n.t("message.admin.download")}
+                  {i18n.t('message.admin.download')}
                 </a>
-              ];
+              ]
             }
           }
         }
       ]
-    };
+    }
   },
-  mounted() {
-    this.getList();
+  mounted () {
+    this.getList()
     // XEAjax.mockList(50).then(data => {
     //   this.tableData = data;
     //   this.loading = false;
@@ -536,119 +643,268 @@ export default {
   },
 
   methods: {
-    /**
-     * 
-     * name: "",
-          gender: "",
-          address: "",
-          phone: "",
-          nationality: "",
-          ger_exam: ""
-     */
-    cellClickEvent({ row }) {
-      this.showDetails = false;
-      this.rowdata = row;
+    save () {
+      console.log('s')
     },
-    toolbarButtonClickEvent({ code }, event) {
-      switch (code) {
-        case "myBtn":
-          this.$XModal.alert(code);
-          break;
+    showTooltipMethod ({ type, column, row, items, _columnIndex }) {
+      return null
+    },
+    rowStyle ({ row, rowIndex }) {
+      if (this._row.includes(row.u_id)) {
+        return {
+          backgroundColor: '#E6A23B',
+          color: '#ffffff'
+        }
       }
     },
-    contextMenuClickEvent({ menu, row, column }) {
+    cellStyle ({ row, rowIndex, column, columnIndex }) {
+      if (column.property === 'sex') {
+        if (row.sex >= '1') {
+          return {
+            backgroundColor: '#187'
+          }
+        } else if (row.age === 26) {
+          return {
+            backgroundColor: '#2db7f5'
+          }
+        }
+      }
+    },
+    selectChange (e) {
+      console.log(this.fileForm)
+    },
+    handleChange (info) {
+      console.log('!!!!!!!!!!!!', info)
+      if (info.fileList.length > 0) {
+        this.handleUpload()
+      }
+    },
+    handleRemove (file) {
+      const index = this.file.indexOf(file)
+      const newFileList = this.file.slice()
+      newFileList.splice(index, 1)
+      this.file = newFileList
+    },
+    beforeUpload (file) {
+      this.file = [...this.file, file]
+      if (this.file.length > 0) {
+        this.file = []
+      }
+      this.file.push(file)
+      console.log('!', this.file)
+      return false
+    },
+    handleUpload () {
+      const { file } = this
+      const formData = new FormData()
+      file.forEach(f => {
+        formData.append('file', f)
+      })
+      this.uploading = true
+
+      // You can use any AJAX library you like
+      console.log(this.file)
+      request({
+        url: '/api/file/common',
+        method: 'post',
+        data: formData,
+        headers: {
+          token: util.cookies.get('token')
+        }
+      })
+        .then(res => {
+          this.fileList = []
+          this.uploading = false
+          this.$message.success('upload successfully.')
+          // this.infoForm.apsAuthFile = res.content
+          this.fileForm.path = res.content
+          console.log('res!!', res)
+          return 1
+        })
+        .catch(res => {
+          this.uploading = false
+          this.$message.error('upload failed.')
+        })
+    },
+    onSubmit (e) {
+      e.preventDefault()
+      this.form.validateFields((err, values) => {
+        values.userId = this.nid
+        this.fileForm.studentId = this.sid.toString()
+        console.log(values)
+        if (!err) {
+          console.log('Received values of form: ', values)
+          request({
+            method: 'post',
+            url: `/api/notice/send`,
+            data: values,
+            headers: {
+              token: util.cookies.get('token')
+            }
+          })
+            .then(res => {
+              this.form.fieldsStore.fields = {}
+              this.onClose()
+              this.$message.success(i18n.t('message.common.success'))
+              if (this.uswitch) {
+                console.log('@', this.fileForm)
+                request({
+                  method: 'post',
+                  url: `/api/file/admin/upload`,
+                  data: this.fileForm,
+                  headers: {
+                    token: util.cookies.get('token')
+                  }
+                }).then(r => {
+                  this.file = []
+                  this.uswitch = false
+                  this.fileForm = {}
+                })
+              }
+            })
+        }
+      })
+    },
+    cellClickEvent ({ row }) {
+      this.showDetails = false
+      this.rowdata = row
+    },
+    onClose () {
+      this.visible = false
+    },
+    toolbarButtonClickEvent ({ code }, event) {
+      switch (code) {
+        case 'myBtn':
+          this.$XModal.alert(code)
+          break
+      }
+    },
+    contextMenuClickEvent ({ menu, row, column }) {
       switch (menu.code) {
-        case "copy":
+        case 'copy':
           // 示例
           if (row && column) {
             if (XEClipboard.copy(row[column.property])) {
               this.$XModal.message({
-                message: "Copied to clipboard!",
-                status: "success"
-              });
+                message: 'Copied to clipboard!',
+                status: 'success'
+              })
             }
           }
-          break;
-        case "detail":
+          break
+        case 'detail':
           // 示例
           if (row && column) {
-            if (row.nationality != "China") {
+            if (row.nationality !== 'China') {
               this.detailData = [
-                "name",
-                "avatar",
-                "gender",
-                "nationality",
-                "birthday",
-                "address",
-                "phone",
-                "exam_auth_file",
-                "passport"
+                'name',
+                'avatar',
+                'gender',
+                'nationality',
+                'birthday',
+                'address',
+                'phone',
+                'exam_auth_file',
+                'passport'
               ].map(field => {
-                return { label: field, value: row[field] };
-              });
+                return { label: field, value: row[field] }
+              })
             } else {
               this.detailData = [
-                "name",
-                "avatar",
-                "gender",
-                "nationality",
-                "birthday",
-                "address",
-                "phone",
-                "cet4",
-                "cet6",
-                "aps_passed",
-                "apsid",
-                "aps_auth_file",
-                "exam_auth_file",
-                "passport"
+                'name',
+                'avatar',
+                'gender',
+                'nationality',
+                'birthday',
+                'address',
+                'phone',
+                'cet4',
+                'cet6',
+                'aps_passed',
+                'apsid',
+                'aps_auth_file',
+                'exam_auth_file',
+                'passport'
               ].map(field => {
-                return { label: field, value: row[field] };
-              });
+                return { label: field, value: row[field] }
+              })
             }
-            this.showDetails = true;
+            this.showDetails = true
           }
-          break;
+          break
+        case 'notify':
+          console.log('Row', row)
+          this.visible = true
+          this.nid = row.u_id
+          this.sid = row.id
+          this.nname = row.name
+          break
+        case 'marked':
+          this.notify(row.u_id)
+          break
         default:
-          this.$XModal.message(`点击了 ${menu.name} 选项`);
+          this.$XModal.message(`clicked ${menu.name} `)
       }
     },
-    handlePageChange({ currentPage, pageSize }) {
-      this.tablePage.currentPage = currentPage;
-      this.tablePage.pageSize = pageSize;
-      this.getList();
+    handlePageChange ({ currentPage, pageSize }) {
+      this.tablePage.currentPage = currentPage
+      this.tablePage.pageSize = pageSize
+      this.getList()
     },
-    getList(key) {
-      let page = this.tablePage;
+    notify (id) {
+      request({
+        method: 'put',
+        url: `/api/member/nofity?notify=1&uid=${id}`,
+        headers: {
+          token: util.cookies.get('token')
+        }
+      }).then(res => {
+        this.$message.success(i18n.t('message.common.success'))
+        if (this._row.includes(res.content.uid)) {
+          this._row.splice(this._row.indexOf(res.content.uid), 1)
+        }
+        this.$refs.xGrid.refreshColumn()
+        console.log(this.$refs.xGrid)
+      })
+    },
+    getList (key) {
+      let page = this.tablePage
       // XEAjax.get("/api/admin/page", this.tableForm.data).then(data => {
       //   console.log
       //   this.tableData = data;
       //   this.loading = false;
       // });
-      let tf = {};
+      let tf = {}
+      let row = []
       if (key == 1) {
-        tf = Object.assign({}, this.tableForm.data);
+        tf = Object.assign({}, this.tableForm.data)
         for (let i in tf) {
-          if (tf[i] == "") {
-            delete tf[i];
+          if (tf[i] == '') {
+            delete tf[i]
           }
         }
       }
 
       request({
-        method: "get",
+        method: 'get',
         url: `/api/admin/page?current=${page.currentPage}&size=${page.pageSize}`,
         params: tf,
         headers: {
-          token: util.cookies.get("token")
+          token: util.cookies.get('token')
         }
       }).then(res => {
-        console.log("rsssssss", res);
-        this.tableData = res.content.records;
-        this.tablePage.total = res.content.total;
-        
-      });
+        console.log('rsssssss', res)
+        this.tableData = res.content.records
+        for (let i of res.content.records) {
+          if (i.notify === '0') {
+            row.push(i.u_id)
+          }
+        }
+        this._row = row
+        console.log('_rrr', row)
+        this.tablePage.total = res.content.total
+      })
     }
   }
-};
+}
 </script>

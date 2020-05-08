@@ -88,7 +88,7 @@
             @tabChange="key => handleTabChange(key, 'noTitleKey')"
           >
             <article-page v-if="noTitleKey === 'article'"></article-page>
-            <app-page v-else-if="noTitleKey === 'app'"></app-page>
+            <app-page @m="resetCount" v-else-if="noTitleKey === 'app'"></app-page>
             <project-page v-else-if="noTitleKey === 'project'"></project-page>
           </a-card>
         </a-col>
@@ -98,113 +98,144 @@
 </template>
 
 <script>
-import { AppPage, ArticlePage, ProjectPage } from "./page";
-import i18n from "@/i18n";
-import { mapGetters } from "vuex";
-import util from "@/libs/util.js";
+import { AppPage, ArticlePage, ProjectPage } from './page'
+import i18n from '@/i18n'
+import request from '@/utils/request'
+import { mapGetters } from 'vuex'
+import util from '@/libs/util.js'
 export default {
-  name: "Center",
+  name: 'Center',
   components: {
     AppPage,
     ArticlePage,
     ProjectPage
   },
-  data() {
+  data () {
     return {
-      tags: i18n.t("message.student.profile.tags").split(","),
+      tags: i18n.t('message.student.profile.tags').split(','),
       user: {},
-
       account: {},
       tagInputVisible: false,
-      tagInputValue: "",
-
+      tagInputValue: '',
       teams: [],
       teamSpinning: true,
-
-      tabListNoTitle: [
-        {
-          key: "article",
-          tab: i18n.t("message.student.profile.file")
-        },
-        {
-          key: "app",
-          tab: i18n.t("message.student.profile.notification")
-        },
-        {
-          key: "project",
-          tab: i18n.t("message.student.profile.log")
-        }
-      ],
-      noTitleKey: "article"
-    };
+      n_count: 10,
+      tabListNoTitle: [],
+      noTitleKey: 'article'
+    }
   },
-  mounted() {
+  mounted () {
     // this.getTeams()
-    let s = util.cookies.get("student");
-    let user = "";
+    this.getNotice()
+    let s = util.cookies.get('student')
+    let user = ''
     if (s != undefined) {
-      user = JSON.parse(s);
-      this.user = user;
-      console.log("usss", user);
+      user = JSON.parse(s)
+      this.user = user
+      console.log('usss', user)
     }
-    let account = JSON.parse(util.cookies.get("user"));
-    if (account.username == "admin") {
-      this.$router.push({ path: "/admin" });
+    let account = JSON.parse(util.cookies.get('user'))
+    if (account.username == 'admin') {
+      this.$router.push({ path: '/admin' })
     }
-    let domain = "http://localhost:888";
-    this.account = account;
-    if (this.user.avatar == null || this.user.avatar == "") {
-      this.user.avatar = "https://preview.pro.loacg.com/avatar2.jpg";
+    let domain = 'http://localhost:888'
+    this.account = account
+    if (this.user.avatar == null || this.user.avatar == '') {
+      this.user.avatar = 'https://preview.pro.loacg.com/avatar2.jpg'
     } else if (
-      this.user.avatar == "https://preview.pro.loacg.com/avatar2.jpg"
+      this.user.avatar == 'https://preview.pro.loacg.com/avatar2.jpg'
     ) {
     } else {
-      this.user.avatar = domain + this.user.avatar;
+      this.user.avatar = domain + this.user.avatar
     }
   },
   methods: {
-    getTeams() {
-      this.$http.get("/workplace/teams").then(res => {
-        this.teams = res.result;
-        this.teamSpinning = false;
-      });
+    getNotice () {
+      request({
+        url: `/api/notice/page?current=1&size=99`,
+        methods: 'get',
+        headers: {
+          token: util.cookies.get('token')
+        }
+      }).then(res => {
+        let c = 0
+        for (let i of res.content.records) {
+          if (i.isread === '0') {
+            c++
+          }
+        }
+        this.initBadge(c)
+        this.loading = false
+      })
+    },
+    initBadge (c) {
+      this.n_count = c
+      this.tabListNoTitle = [
+        {
+          key: `article`,
+          tab: i18n.t('message.student.profile.file')
+        },
+        {
+          key: `app`,
+          tab: <a-badge count={c}>
+            <span style="margin-right:15px">{i18n.t('message.student.profile.notification')}</span>
+          </a-badge>
+        },
+        {
+          key: 'project',
+          tab: i18n.t('message.student.profile.log')
+        }
+      ]
+    },
+    getTeams () {
+      this.$http.get('/workplace/teams').then(res => {
+        this.teams = res.result
+        this.teamSpinning = false
+      })
+    },
+    resetCount (c) {
+      let _this = this
+      if (c) {
+        _this.initBadge(_this.n_count - 1)
+      }
+      console.log('3', _this.n_count)
     },
 
-    handleTabChange(key, type) {
-      this[type] = key;
+    handleTabChange (key, type) {
+      this[type] = key
     },
 
-    handleTagClose(removeTag) {
-      const tags = this.tags.filter(tag => tag !== removeTag);
-      this.tags = tags;
+    handleTagClose (removeTag) {
+      const tags = this.tags.filter(tag => tag !== removeTag)
+      this.tags = tags
     },
 
-    showTagInput() {
-      this.tagInputVisible = true;
+    showTagInput () {
+      this.tagInputVisible = true
       this.$nextTick(() => {
-        this.$refs.tagInput.focus();
-      });
+        this.$refs.tagInput.focus()
+      })
     },
 
-    handleInputChange(e) {
-      this.tagInputValue = e.target.value;
+    handleInputChange (e) {
+      this.tagInputValue = e.target.value
     },
 
-    handleTagInputConfirm() {
-      const inputValue = this.tagInputValue;
-      let tags = this.tags;
+    handleTagInputConfirm () {
+      const inputValue = this.tagInputValue
+      let tags = this.tags
       if (inputValue && !tags.includes(inputValue)) {
-        tags = [...tags, inputValue];
+        tags = [...tags, inputValue]
       }
 
       Object.assign(this, {
         tags,
         tagInputVisible: false,
-        tagInputValue: ""
-      });
+        tagInputValue: ''
+      })
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>

@@ -126,18 +126,18 @@
 </template>
 
 <script>
-import util from "@/libs/util.js";
-import request from "@/utils/request";
+import util from '@/libs/util.js'
+import request from '@/utils/request'
 import i18n from '@/i18n'
 export default {
-  name: "BaseForm",
-  data() {
+  name: 'BaseForm',
+  data () {
     return {
       // cropper
       preview: {},
       country: [],
       headers: {
-        token: util.cookies.get("token")
+        token: util.cookies.get('token')
       },
       profile: {},
       file: [],
@@ -145,251 +145,250 @@ export default {
       gerFile: [],
       uploading: false,
       infoForm: {
-        apsid: "",
-        apsPassed: "",
-        gerExam: "",
-        apsid: "",
-        cet6: "",
-        cet4: "",
-        examAuthFile: "",
-        apsAuthFile: "",
-        passport: ""
+        apsid: '',
+        apsPassed: '',
+        gerExam: '',
+        cet6: '',
+        cet4: '',
+        examAuthFile: '',
+        apsAuthFile: '',
+        passport: ''
       }
-    };
+    }
   },
-  mounted() {
-    this.init();
+  mounted () {
+    this.init()
   },
 
   methods: {
-    init() {
-      console.log("base init");
-      let domain = "http://localhost:888";
+    init () {
+      console.log('base init')
+      let domain = 'http://localhost:888'
       let thumb =
-        "https://www.pngitem.com/pimgs/m/499-4997293_pdf-file-icon-png-transparent-png.png";
-      let c = util.cookies.get("student");
+        'https://www.pngitem.com/pimgs/m/499-4997293_pdf-file-icon-png-transparent-png.png'
+      let c = util.cookies.get('student')
       if (c != undefined) {
-        let student = JSON.parse(c);
-        this.profile = student;
-        console.log("student:", student);
-        this.lastName = student.name.split(" ")[0];
-        this.firstName = student.name.split(" ")[1];
-        this.infoForm = student;
+        let student = JSON.parse(c)
+        this.profile = student
+        console.log('student:', student)
+        this.lastName = student.name.split(' ')[0]
+        this.firstName = student.name.split(' ')[1]
+        this.infoForm = student
         let _f = [
           {
-            uid: "-1",
-            name: "aps",
-            status: "done",
+            uid: '-1',
+            name: 'aps',
+            status: 'done',
             url: domain + student.apsAuthFile,
             thumbUrl: thumb
           }
-        ];
-        if (student.apsAuthFile != null && student.apsAuthFile != "") {
-          this.file = _f;
+        ]
+        if (student.apsAuthFile != null && student.apsAuthFile != '') {
+          this.file = _f
         }
         let _f2 = [
           {
-            uid: "-1",
-            name: "ger",
-            status: "done",
+            uid: '-1',
+            name: 'ger',
+            status: 'done',
             url: domain + student.examAuthFile,
             thumbUrl: thumb
           }
-        ];
-        if (student.examAuthFile != null && student.examAuthFile != "") {
-          this.gerFile = _f2;
+        ]
+        if (student.examAuthFile != null && student.examAuthFile != '') {
+          this.gerFile = _f2
         }
         let _f3 = [
           {
-            uid: "-1",
-            name: "passport",
-            status: "done",
+            uid: '-1',
+            name: 'passport',
+            status: 'done',
             url: domain + student.passport,
             thumbUrl: thumb
           }
-        ];
-        if (student.passport != null && student.passport != "") {
-          this.passportFile = _f3;
+        ]
+        if (student.passport != null && student.passport != '') {
+          this.passportFile = _f3
         }
       }
     },
-    handleChange(info) {
-      this.handleUpload();
+    handleChange (info) {
+      this.handleUpload()
     },
-    handleChange2(info) {
-      this.handleUpload2();
+    handleChange2 (info) {
+      this.handleUpload2()
     },
-    handleChange3(info) {
-      this.handleUpload3();
+    handleChange3 (info) {
+      this.handleUpload3()
     },
-    handleRemove(file) {
-      const index = this.file.indexOf(file);
-      const newFileList = this.file.slice();
-      newFileList.splice(index, 1);
-      this.file = newFileList;
+    handleRemove (file) {
+      const index = this.file.indexOf(file)
+      const newFileList = this.file.slice()
+      newFileList.splice(index, 1)
+      this.file = newFileList
     },
-    beforeUpload(file) {
-      this.file = [...this.file, file];
+    beforeUpload (file) {
+      this.file = [...this.file, file]
       if (this.file.length > 0) {
-        this.file = [];
+        this.file = []
       }
-      this.file.push(file);
+      this.file.push(file)
 
-      console.log("!", this.file);
-      return false;
+      console.log('!', this.file)
+      return false
     },
-    handleUpload() {
-      const { file } = this;
-      const formData = new FormData();
+    handleUpload () {
+      const { file } = this
+      const formData = new FormData()
       file.forEach(f => {
-        formData.append("file", f);
-      });
-      this.uploading = true;
+        formData.append('file', f)
+      })
+      this.uploading = true
 
       // You can use any AJAX library you like
-      console.log(this.file);
+      console.log(this.file)
       request({
-        url: "/api/file/common",
-        method: "post",
+        url: '/api/file/common',
+        method: 'post',
         data: formData,
         headers: {
-          token: util.cookies.get("token")
+          token: util.cookies.get('token')
         }
       })
         .then(res => {
-          this.fileList = [];
-          this.uploading = false;
-          this.$message.success("upload successfully.");
-          this.infoForm.apsAuthFile = res.content;
-          console.log("res!!", res);
-          return 1;
+          this.fileList = []
+          this.uploading = false
+          this.$message.success('upload successfully.')
+          this.infoForm.apsAuthFile = res.content
+          console.log('res!!', res)
+          return 1
         })
         .catch(res => {
-          this.uploading = false;
-          this.$message.error("upload failed.");
-        });
+          this.uploading = false
+          this.$message.error('upload failed.')
+        })
     },
 
-    handleRemove2(file) {
-      const index = this.gerFile.indexOf(file);
-      const newFileList = this.gerFile.slice();
-      newFileList.splice(index, 1);
-      this.gerFile = newFileList;
+    handleRemove2 (file) {
+      const index = this.gerFile.indexOf(file)
+      const newFileList = this.gerFile.slice()
+      newFileList.splice(index, 1)
+      this.gerFile = newFileList
     },
-    beforeUpload2(file) {
-      this.gerFile = [...this.gerFile, file];
+    beforeUpload2 (file) {
+      this.gerFile = [...this.gerFile, file]
       if (this.gerFile.length > 0) {
-        this.gerFile = [];
+        this.gerFile = []
       }
-      this.gerFile.push(file);
-      return false;
+      this.gerFile.push(file)
+      return false
     },
-    handleUpload2() {
-      const { gerFile } = this;
-      const formData = new FormData();
+    handleUpload2 () {
+      const { gerFile } = this
+      const formData = new FormData()
       gerFile.forEach(f => {
-        formData.append("file", f);
-      });
-      this.uploading2 = true;
+        formData.append('file', f)
+      })
+      this.uploading2 = true
 
       // You can use any AJAX library you like
       request({
-        url: "/api/file/common",
-        method: "post",
+        url: '/api/file/common',
+        method: 'post',
         data: formData,
         headers: {
-          token: util.cookies.get("token")
+          token: util.cookies.get('token')
         }
       })
         .then(res => {
-          this.fileList = [];
-          this.uploading2 = false;
+          this.fileList = []
+          this.uploading2 = false
           // this.$message.success("upload successfully.");
-          this.infoForm.examAuthFile = res.content;
-          return 1;
+          this.infoForm.examAuthFile = res.content
+          return 1
 
-          console.log("res!!", res);
+          console.log('res!!', res)
         })
         .catch(res => {
-          this.uploading2 = false;
-          this.$message.error("upload failed.");
-        });
+          this.uploading2 = false
+          this.$message.error('upload failed.')
+        })
     },
-    handleRemove3(file) {
-      const index = this.passportFile.indexOf(file);
-      const newFileList = this.passportFile.slice();
-      newFileList.splice(index, 1);
-      this.passportFile = newFileList;
+    handleRemove3 (file) {
+      const index = this.passportFile.indexOf(file)
+      const newFileList = this.passportFile.slice()
+      newFileList.splice(index, 1)
+      this.passportFile = newFileList
     },
-    beforeUpload3(file) {
-      this.passportFile = [...this.passportFile, file];
+    beforeUpload3 (file) {
+      this.passportFile = [...this.passportFile, file]
       if (this.passportFile.length > 0) {
-        this.passportFile = [];
+        this.passportFile = []
       }
-      this.passportFile.push(file);
-      return false;
+      this.passportFile.push(file)
+      return false
     },
-    handleUpload3() {
-      const { passportFile } = this;
-      const formData = new FormData();
+    handleUpload3 () {
+      const { passportFile } = this
+      const formData = new FormData()
       passportFile.forEach(f => {
-        formData.append("file", f);
-      });
-      this.uploading3 = true;
+        formData.append('file', f)
+      })
+      this.uploading3 = true
 
       // You can use any AJAX library you like
       request({
-        url: "/api/file/common",
-        method: "post",
+        url: '/api/file/common',
+        method: 'post',
         data: formData,
         headers: {
-          token: util.cookies.get("token")
+          token: util.cookies.get('token')
         }
       })
         .then(res => {
-          this.fileList = [];
-          this.uploading3 = false;
+          this.fileList = []
+          this.uploading3 = false
           // this.$message.success("upload successfully.");
-          this.infoForm.passport = res.content;
-          return 1;
+          this.infoForm.passport = res.content
+          return 1
         })
         .catch(res => {
-          this.uploading3 = false;
-          this.$message.error("upload failed.");
-        });
+          this.uploading3 = false
+          this.$message.error('upload failed.')
+        })
     },
-    setavatar(url) {
-      this.option.img = url;
+    setavatar (url) {
+      this.option.img = url
     },
-    onChange() {},
-    submitForm() {
-      let _this = this;
-      let name = _this.lastName + " " + _this.firstName;
-      _this.infoForm.name = name;
-      let url = "/api/member/new";
-      console.log("u", this.infoForm);
+    onChange () {},
+    submitForm () {
+      let _this = this
+      let name = _this.lastName + ' ' + _this.firstName
+      _this.infoForm.name = name
+      let url = '/api/member/new'
+      console.log('u', this.infoForm)
       request({
         url,
-        method: "put",
+        method: 'put',
         data: this.infoForm,
         headers: {
-          token: util.cookies.get("token")
+          token: util.cookies.get('token')
         }
       })
         .then(res => {
           this.$message({
             message: i18n.t('message.common.success'),
-            type: "success"
-          });
-          util.cookies.set("student", res.content);
-          console.log("res:", res.content);
+            type: 'success'
+          })
+          util.cookies.set('student', res.content)
+          console.log('res:', res.content)
         })
         .catch(e => {
-          this.$message.error(e);
-        });
+          this.$message.error(e)
+        })
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>
