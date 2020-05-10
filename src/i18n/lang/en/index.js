@@ -158,6 +158,30 @@ export default {
       }
     },
     admin: {
+      right_click_menu: {
+        notify: 'notify',
+        copy: 'copy',
+        detail: 'detail',
+        mark_as_read: 'mark as read',
+        sort: 'sort',
+        asc: 'asc',
+        desc: 'desc'
+      },
+      file_type_management: {
+        add_new: 'add new',
+        name: 'name',
+        description: 'description',
+        operation: 'operation',
+        edit: 'edit',
+        hint_name: 'Please enter name',
+        hint_description: 'Please enter description',
+        delete: 'delete',
+        sure_to_delete: 'sure to delete？',
+        cancel: 'cancel',
+        ok: 'ok',
+        add_update_type: 'Add / Update Type',
+        submit: 'Submit'
+      },
       edit: {
         title: 'Send a new notification',
         send_to: 'Send to',
