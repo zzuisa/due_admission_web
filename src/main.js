@@ -17,14 +17,15 @@ import Antd, {
   Row,
   Col
 } from 'ant-design-vue'
+
 import 'ant-design-vue/dist/antd.css'
 import moment from 'moment'
 import 'vxe-table/lib/index.css'
 import XEClipboard from 'xe-clipboard'
 import VXETable from 'vxe-table'
 import enUS from 'vxe-table/lib/locale/lang/en-US'
+import zhCN from 'vxe-table/lib/locale/lang/zh-CN'
 import XEUtils from 'xe-utils/methods/xe-utils'
-
 import store from '@/store/index'
 // 模拟数据
 import '@/mock'
@@ -34,7 +35,6 @@ import i18n from './i18n'
 import d2Admin from '@/plugin/d2admin'
 
 // 菜单和路由设置
-import router from './router'
 import {
   menuAside2,
   menuHeader,
@@ -45,6 +45,9 @@ import {
   router2
 } from '@/config/routes'
 import util from '@/libs/util.js'
+import router from './router'
+
+console.log('frameInRoutes', frameInRoutes, router2)
 Vue.use(VXETable)
 Vue.use(XEClipboard)
 
@@ -67,25 +70,42 @@ Vue.use(Message)
 Vue.use(Tabs)
 Vue.use(i18n)
 Vue.use(ElementUI)
-console.log('frameInRoutes', frameInRoutes, router2)
 
 // 核心插件
 Vue.use(d2Admin)
 
 new Vue({
+  i18n,
   router,
   store,
-  i18n,
   el: '#app',
   render: h => h(App),
   created () {
-    let user = JSON.parse(util.cookies.get('user'))
+    let _u = util.cookies.get('user')
+    let user = {}
+    if (_u !== undefined) {
+      user = JSON.parse(util.cookies.get('user'))
+    }
+    let l = util.cookies.get('locale')
+    console.log('locale', l)
+    if (l != undefined && l != null) {
+      this.$i18n.locale = l
+      if (l === 'cn') {
+        VXETable.setup({
+          i18n: key => XEUtils.get(zhCN, key)
+        })
+      } else {
+        VXETable.setup({
+          i18n: key => XEUtils.get(enUS, key)
+        })
+      }
+    }
     let menu = user.username == 'admin' ? menuAside2 : menuAside
     console.log()
     // 处理路由 得到每一级的路由设置
     this.$store.commit('d2admin/page/init', frameInRoutes)
     // 设置顶栏菜单
-    // this.$store.commit('d2admin/menu/headerSet', menuHeader)
+    // this.$store.commit('d2admin/menu/headerSet', menu)
     // 设置侧边栏菜单
     this.$store.commit('d2admin/menu/asideSet', menu)
     // 初始化菜单搜索功能

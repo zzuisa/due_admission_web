@@ -2,15 +2,20 @@
 
 // 工具
 import util from '@/libs/util.ice';
+import utils from '@/libs/util.js'
+
 // 页面和布局
 import Index from '@/pages/Index';
 import Login from '@/pages/Login'
 import Error404 from '@/pages/Error404';
-import Workplace  from '@/pages/Dashboard';
+import Workplace from '@/pages/Dashboard';
 import Admin from '@/pages/Admin';
+import TypeManagement from '@/pages/Admin/TypeManagement/TypeManagement';
+import LogManagement from '@/pages/Admin/LogManagement/LogManagement';
 import Center from '@/pages/account/Center';
 import Settings from '@/pages/account/Settings';
 import HeaderAside from '@/layouts/HeaderAside';
+import i18n from '@/i18n'
 
 // 如果不指定 name 字段，会根据 path 生成 name = page-demo1
 // 转换规则见 util.recursiveRouterConfig 中 path2name 方法
@@ -21,38 +26,100 @@ import HeaderAside from '@/layouts/HeaderAside';
 // 变量名 routerConfig 为 iceworks 检测关键字
 // ice 会自动在这个变量下添加路由数据
 // 请不要修改名称
-const routerConfig = [
-  {
+if(utils.cookies.get('locale')!== undefined && utils.cookies.get('locale') !== null){
+  i18n.locale = (utils.cookies.get('locale'))
+}
+const routerConfig = [{
     path: '/',
     title: 'Home',
+    hidden: true,
     component: HeaderAside,
+    meta: {
+      title: i18n.t('message.router.student.home')
+    },
     children: [
       // { path: 'demo2', component: Demo2 },
       // keep the name param
       // { path: 'workplace', component: Workplace, name: 'Workplace' },
-      { path: '/', component: Center, name: 'Workplace' },
-      { path: 'profile', component: Center, name: 'Center' },
-      { path: 'settings', component: Settings, name: 'Settings' },
+      {
+        path: '/',
+        component: Center,
+        name: 'Workplace'
+      },
+      {
+        path: 'profile',
+        component: Center,
+        name: 'Center',
+        meta: {
+          title: i18n.t('message.router.student.profile')
+        }
+      },
+      {
+        path: 'settings',
+        component: Settings,
+        name: 'Settings',
+        meta: {
+          title: i18n.t('message.router.student.settings')
+        }
+      },
     ],
   },
-  { path: '*', component: Error404 },
-  { path: '/index', component: Index },
+  {
+    path: '/admin',
+    title: 'Admin',
+    component: HeaderAside,
+    children: [
+      // keep the name param
+      {
+        path: 'student',
+        title: 'admin',
+        component: Admin,
+        name: 'Admin',
+        meta: {
+          title: i18n.t('message.router.admin.student_management')
+        }
+      },
+      {
+        path: 'type',
+        component: TypeManagement,
+        name: 'TypeManagement',
+        meta: {
+          title: i18n.t('message.router.admin.file_type_management')
+        }
+      },
+      {
+        path: 'log',
+        component: LogManagement,
+        name: 'log',
+        meta: {
+          title: i18n.t('message.router.admin.log_management')
+        }
+      },
+
+    ],
+  },
+  {
+    path: '*',
+    component: Error404,
+    hidden: true
+  },
+  {
+    path: '/index',
+    component: Index,
+    hidden: true,
+    meta: {
+      title: i18n.t('message.router.student.home')
+    }
+  },
 
 ];
 
 const routerConfig2 = [
-  {
-    path: '/',
-    title: 'Home',
-    component: HeaderAside,
-    children: [
-      // keep the name param
-      { path: 'admin', component: Admin, name: 'Admin' },
-      { path: 'workplace', component: Workplace, name: 'Workplace' },
 
-    ],
+  {
+    path: '*',
+    component: Error404
   },
-  { path: '*', component: Error404 },
   // { path: '/admin', component: Index },
 ];
 
@@ -63,7 +130,7 @@ const routerConfig2 = [
 
 const routerConfigMenuLogin = [
   // 登录
-  
+
   {
     path: '/login',
     name: 'login',
@@ -90,14 +157,35 @@ export default util.recursiveRouterConfig([
 function getFrameInRoutes() {
   const frameInRoutes = [];
   util.recursiveRouterConfig(routerConfig).forEach(e => {
-    const { path, name, hidden, meta, children } = e;
+    const {
+      path,
+      name,
+      hidden,
+      meta,
+      children
+    } = e;
     if (children) {
       children.forEach(child => {
-        const { path, name, hidden, meta } = child;
-        frameInRoutes.push({ path, name, hidden, meta });
+        const {
+          path,
+          name,
+          hidden,
+          meta
+        } = child;
+        frameInRoutes.push({
+          path,
+          name,
+          hidden,
+          meta
+        });
       });
     } else {
-      frameInRoutes.push({ path, name, hidden, meta });
+      frameInRoutes.push({
+        path,
+        name,
+        hidden,
+        meta
+      });
     }
   });
 
@@ -107,14 +195,35 @@ function getFrameInRoutes() {
 function getFrameInRoutes2() {
   const frameInRoutes = [];
   util.recursiveRouterConfig(routerConfig2).forEach(e => {
-    const { path, name, hidden, meta, children } = e;
+    const {
+      path,
+      name,
+      hidden,
+      meta,
+      children
+    } = e;
     if (children) {
       children.forEach(child => {
-        const { path, name, hidden, meta } = child;
-        frameInRoutes.push({ path, name, hidden, meta });
+        const {
+          path,
+          name,
+          hidden,
+          meta
+        } = child;
+        frameInRoutes.push({
+          path,
+          name,
+          hidden,
+          meta
+        });
       });
     } else {
-      frameInRoutes.push({ path, name, hidden, meta });
+      frameInRoutes.push({
+        path,
+        name,
+        hidden,
+        meta
+      });
     }
   });
 

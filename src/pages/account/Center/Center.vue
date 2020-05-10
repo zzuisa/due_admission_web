@@ -136,7 +136,7 @@ export default {
     }
     let account = JSON.parse(util.cookies.get('user'))
     if (account.username == 'admin') {
-      this.$router.push({ path: '/admin' })
+      this.$router.push({ path: '/admin/stidemt' })
     }
     let domain = 'http://localhost:888'
     this.account = account

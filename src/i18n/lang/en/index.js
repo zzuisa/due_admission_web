@@ -8,7 +8,50 @@ export default {
       not_activate: 'Not activated, please check your mailbox and activate before logging in',
       others: 'operation failed'
     },
+    index: {
+      tabs: {
+        home: 'Home',
+        subject: 'Subject',
+        background: 'Background',
+        requirement: 'Requirement',
+        application: 'Application',
+        experience_of_earlier_applicants: 'Experience of earlier applicants',
+        links: 'Links',
+        contact: 'Contact'
+      },
+      footer: {
+        open_source_organization: 'Open Source Organization',
+        document: 'Document',
+        simplified_version: 'Simplified Version',
+        wechat: 'Wechat'
+      },
+      title: 'Your way to study in NRW (Germany)',
+      p1: ` You'd like to study in Germany? A great idea! We look forward to welcoming you! You're not yet sure which university to apply to? You're interested in doing a Bachelor study and are looking for an appropriate programme? Or you're wondering how you can finance your stay, or how foreign students live in Germany and how they're supervised? We're happy to help you!`,
+      p2: `We are offering a fast track to your study at the University of Duisburg-Essen which is located in NRW.`,
+      p3: `NRW [German:Nordrhein-Westfalen] is the most populous state of Germany.`,
+      p4: `For the moment we have a special program`,
+      p5: `for Chinese, Malaysian and Indonesian students who want to apply for an Engineering Study at the University of Duisburg-Essen.`,
+      p6: 'In future this programme will be extended beyond the Faculty for Engineering. Please come back!',
+      login_in_p: 'LOGIN',
+      program_detail: '(program detail)'
+
+    },
+    router: {
+      student: {
+        profile: 'Profile',
+        settings: 'Settings',
+        home: 'Home'
+      },
+      admin: {
+        student_management: 'StudentManagement',
+        file_type_management: 'FileTypeManagement',
+        log_management: 'LogManagement'
+      }
+    },
     common: {
+      under_construction: 'This page is under construction',
+      warning: 'Warning',
+      change_language: 'Change Language:',
       home: 'Home',
       no_login: 'Not logged in',
       logout: 'Logout',
@@ -67,6 +110,7 @@ export default {
         quick_login: {
           admin: 'admin',
           user1: 'user1',
+          title: 'Quickly select users',
           tip: 'Quickly select users (test function)'
         },
         hint1: 'Please input the username!',
@@ -75,13 +119,14 @@ export default {
         form_verify_failed: 'form verify failed!'
       },
       profile: {
+        set_as_read: 'set as read',
         team: 'Team',
         tag: 'Tags',
         file: 'my files',
         notification: 'view notifications',
         log: 'operation logs',
         public: 'public at',
-        tags: 'Very thoughtful, Focus on design, Spicy ~, Long legs, Chuanmeizi, Hainaichuan'
+        tags: 'Very thoughtful, Focus on design,Full stack development, Positive attitude, Responsible'
       },
       settings: {
         basic_info: 'basic info',
@@ -113,6 +158,18 @@ export default {
       }
     },
     admin: {
+      edit: {
+        title: 'Send a new notification',
+        send_to: 'Send to',
+        label_title: 'Title',
+        label_content: 'Content',
+        hint_title: 'Please enter title',
+        hint_content: 'Please enter content',
+        upload_file: 'upload file',
+        file_type: 'File Type',
+        cancel: 'Cancel',
+        submit: 'Submit'
+      },
       name: 'name',
       apsid: 'apsid',
       address: 'address',

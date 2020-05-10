@@ -1,23 +1,55 @@
 <template>
-  <div class="ant-pro-pages-account-projects-cardList">
-    <a-list itemLayout="horizontal" :dataSource="data">
-      <a-list-item slot="renderItem" slot-scope="item, index">
-        <a-list-item-meta :description="'TIME:['+item.create_time+'] URL:['+item.url +']'">
-          <a slot="title" href="#">
-          {{ item.content }}
-          <a-tag style="float:right">{{item.type}}</a-tag>
-          </a>
-          <a-avatar
-            slot="avatar"
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Info_icon-72a7cf.svg/1200px-Info_icon-72a7cf.svg.png"
-          />
-        </a-list-item-meta>
-      </a-list-item>
-    </a-list>
-    <a-pagination @change="onPagichange" v-model="current" :total="total" showLessItems />
-  </div>
+  <d2-container>
+    <div class="ant-pro-pages-account-projects-cardList">
+      <a-list itemLayout="horizontal" :dataSource="data">
+        <a-list-item slot="renderItem" slot-scope="item, index">
+          <a-list-item-meta :description="'TIME:['+item.create_time+'] URL:['+item.url +']'">
+            <a slot="title" href="#">
+              <a-tag>{{item.username}}</a-tag> {{ item.content }}
+              <a-tag style="float:right">{{item.type}}</a-tag>
+            </a>
+            <a-avatar
+              slot="avatar"
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Info_icon-72a7cf.svg/1200px-Info_icon-72a7cf.svg.png"
+            />
+          </a-list-item-meta>
+        </a-list-item>
+      </a-list>
+      <a-pagination @change="onPagichange" v-model="current" :total="total" showLessItems />
+    </div>
+  </d2-container>
 </template>
 <script>
+import moment from 'moment'
+import util from '@/libs/util.js'
+import request from '@/utils/request'
+import i18n from '@/i18n'
+const columns = [
+  {
+    title: 'id',
+    dataIndex: 'id',
+    width: '5%',
+    scopedSlots: { customRender: 'id' }
+  },
+  {
+    title: 'name',
+    dataIndex: 'name',
+    width: '30%',
+    scopedSlots: { customRender: 'name' }
+  },
+  {
+    title: 'description',
+    dataIndex: 'description',
+    width: '45%',
+    scopedSlots: { customRender: 'description' }
+  },
+  {
+    width: '20%',
+    title: 'operation',
+    dataIndex: 'operation',
+    scopedSlots: { customRender: 'operation' }
+  }
+]
 export default {
   data () {
     return {
@@ -57,7 +89,7 @@ export default {
     },
     getList(current) {
       request({
-        url: `/api/log/mylogs?current=${current}&size=5`,
+        url: `/api/log/all?current=${current}&size=10`,
         method: "get",
         headers: {
           token: util.cookies.get("token")

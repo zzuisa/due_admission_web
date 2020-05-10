@@ -10,8 +10,8 @@
       <div class="page-login--content" flex="dir:top main:justify cross:center box:justify">
         <div class="page-login--content-header">
           <p class="page-login--content-header-motto">
-          <!-- {{时间是一切财富中最宝贵的财富。}}
-            <span>—— 德奥弗拉斯多</span> -->
+            <!-- {{时间是一切财富中最宝贵的财富。}}
+            <span>—— 德奥弗拉斯多</span>-->
             {{$t('message.student.login.saying')}}
             <span>{{$t('message.student.login.saying_author')}}</span>
           </p>
@@ -20,7 +20,7 @@
           <!-- logo -->
           <!-- 表单 -->
           <div class="page-login--form">
-          <img class="page-login--logo" src="./image/logo@2x.png" />
+            <img class="page-login--logo" src="./image/logo@2x.png" />
             <el-card shadow="never" v-if="r_register" class="transition-box">
               <el-form
                 ref="registerForm"
@@ -30,27 +30,48 @@
                 size="default"
               >
                 <el-form-item prop="username">
-                  <el-input type="text" v-model="formRegister.username" :placeholder="$t('message.common.username')">
+                  <el-input
+                    type="text"
+                    v-model="formRegister.username"
+                    :placeholder="$t('message.common.username')"
+                  >
                     <i slot="prepend" class="fa fa-user-circle-o"></i>
                   </el-input>
                 </el-form-item>
                 <el-form-item prop="email">
-                  <el-input type="text" v-model="formRegister.email" :placeholder="$t('message.common.email')">
+                  <el-input
+                    type="text"
+                    v-model="formRegister.email"
+                    :placeholder="$t('message.common.email')"
+                  >
                     <i slot="prepend" class="fa fa-keyboard-o"></i>
                   </el-input>
                 </el-form-item>
                 <el-form-item prop="password">
-                  <el-input type="password" v-model="formRegister.password" :placeholder="$t('message.common.password')">
+                  <el-input
+                    type="password"
+                    v-model="formRegister.password"
+                    :placeholder="$t('message.common.password')"
+                  >
                     <i slot="prepend" class="fa fa-keyboard-o"></i>
                   </el-input>
                 </el-form-item>
                 <el-form-item prop="password">
-                  <el-input type="password" v-model="formRegister.rePassword" :placeholder="$t('message.common.re_password')">
+                  <el-input
+                    type="password"
+                    v-model="formRegister.rePassword"
+                    :placeholder="$t('message.common.re_password')"
+                  >
                     <i slot="prepend" class="fa fa-keyboard-o"></i>
                   </el-input>
                 </el-form-item>
 
-                <el-button size="default" @click="submit(2)" type="primary" class="button-login">{{$t('message.student.login.register_user')}}</el-button>
+                <el-button
+                  size="default"
+                  @click="submit(2)"
+                  type="primary"
+                  class="button-login"
+                >{{$t('message.student.login.register_user')}}</el-button>
               </el-form>
             </el-card>
             <el-card shadow="never" v-if="r_login" class="transition-box">
@@ -62,12 +83,20 @@
                 size="default"
               >
                 <el-form-item prop="username">
-                  <el-input type="text" v-model="formLogin.username" :placeholder="$t('message.common.username')">
+                  <el-input
+                    type="text"
+                    v-model="formLogin.username"
+                    :placeholder="$t('message.common.username')"
+                  >
                     <i slot="prepend" class="fa fa-user-circle-o"></i>
                   </el-input>
                 </el-form-item>
                 <el-form-item prop="password">
-                  <el-input type="password" v-model="formLogin.password" :placeholder="$t('message.common.password')">
+                  <el-input
+                    type="password"
+                    v-model="formLogin.password"
+                    :placeholder="$t('message.common.password')"
+                  >
                     <i slot="prepend" class="fa fa-keyboard-o"></i>
                   </el-input>
                 </el-form-item>
@@ -79,12 +108,18 @@
                     </template>
                   </el-input>
                 </el-form-item>
-                <el-button size="default" @click="submit(1)" type="primary" class="button-login">{{$t('message.student.login.login')}}</el-button>
+                <el-button
+                  size="default"
+                  @click="submit(1)"
+                  type="primary"
+                  class="button-login"
+                >{{$t('message.student.login.login')}}</el-button>
               </el-form>
             </el-card>
             <p class="page-login--options" flex="main:justify cross:center">
               <span>
-                <d2-icon name="question-circle" />{{$t('message.student.login.forget_password')}}
+                <d2-icon name="question-circle" />
+                {{$t('message.student.login.forget_password')}}
               </span>
               <span @click="changeText()">{{hintText}}</span>
             </p>
@@ -96,6 +131,16 @@
               @click="dialogVisible = true"
             >{{$t('message.student.login.quick_login.tip')}}</el-button>
           </div>
+          <div class="locale-changer">
+            {{$t('message.common.change_language')}}
+            <a-select @change="saveLanguage" style="float:right;margin-left:15px" v-model="$i18n.locale">
+              <a-select-option
+                v-for="(lang, i) in langs"
+                :key="`Lang${i}`"
+                :value="lang"
+              >{{ lang==='en'?'English':'简体中文' }}</a-select-option>
+            </a-select>
+          </div>
         </div>
         <div class="page-login--content-footer">
           <p class="page-login--content-footer-options">
@@ -105,13 +150,14 @@
           </p>
           <p class="page-login--content-footer-copyright">
             Copyright
-            <d2-icon name="copyright" />{{$t('message.student.login.footer_words')}}
+            <d2-icon name="copyright" />
+            {{$t('message.student.login.footer_words')}}
             <a href="https://gitee.com/zzuisa">@Ao</a>
           </p>
         </div>
       </div>
     </div>
-    <el-dialog title="快速选择用户" :visible.sync="dialogVisible" width="400px">
+    <el-dialog :title="$t('message.student.login.quick_login.title')" :visible.sync="dialogVisible" width="400px">
       <el-row :gutter="10" style="margin: -20px 0px -10px 0px;">
         <el-col v-for="(user, index) in users" :key="index" :span="8">
           <div class="page-login--quick-user" @click="handleUserBtnClick(user)">
@@ -133,9 +179,13 @@ import { menuHeader, menuAside2, menuAside } from '@/config/menu'
 import $http from 'axios'
 import i18n from '@/i18n'
 import request from '@/utils/request'
+import zhCN from '@/i18n/lang/cn'
+import en from '@/i18n/lang/en'
+
 export default {
   data () {
     return {
+      langs: ['en', 'cn'],
       r_login: true,
       r_register: false,
       timeInterval: null,
@@ -170,22 +220,37 @@ export default {
       // 校验
       rules: {
         username: [
-          { required: true, message: i18n.t('message.student.login.hint1'), trigger: 'blur' }
+          {
+            required: true,
+            message: i18n.t('message.student.login.hint1'),
+            trigger: 'blur'
+          }
         ],
-        password: [{ required: true, message: i18n.t('message.student.login.hint2'), trigger: 'blur' }],
-        code: [{ required: true, message: i18n.t('message.student.login.hint3'), trigger: 'blur' }]
+        password: [
+          {
+            required: true,
+            message: i18n.t('message.student.login.hint2'),
+            trigger: 'blur'
+          }
+        ],
+        code: [
+          {
+            required: true,
+            message: i18n.t('message.student.login.hint3'),
+            trigger: 'blur'
+          }
+        ]
       }
     }
   },
   mounted () {
     let c = util.cookies.get('user')
-    console.log('user', c)
     if (c != undefined) {
       let user = JSON.parse(c)
       if (user.username != 'admin') {
         this.$router.push({ path: '/' })
       } else {
-        this.$router.push({ path: '/admin' })
+        this.$router.push({ path: '/admin/student' })
       }
     }
     this.timeInterval = setInterval(() => {
@@ -199,6 +264,9 @@ export default {
     ...mapActions('d2admin/account', ['login']),
     refreshTime () {
       this.time = dayjs().format('HH:mm:ss')
+    },
+    saveLanguage (e) {
+      util.cookies.set('locale', e)
     },
     changeText () {
       let _this = this
@@ -248,7 +316,7 @@ export default {
                 let path = '/'
                 if (res.content.member.username == 'admin') {
                   this.$store.commit('d2admin/menu/asideSet', menuAside2)
-                  path = '/admin'
+                  path = '/admin/student'
                 } else {
                   this.$store.commit('d2admin/menu/asideSet', menuAside)
                 }
@@ -293,7 +361,9 @@ export default {
             })
           } else {
             // 登录表单校验失败
-            this.$message.error(i18n.t('message.student.login.form_verify_failed'))
+            this.$message.error(
+              i18n.t('message.student.login.form_verify_failed')
+            )
           }
         })
       }
@@ -444,6 +514,12 @@ export default {
         color: $color-text-normal;
       }
     }
+  }
+  .locale-changer {
+    line-height: 30px;
+    display: flex;
+    justify-content: center;
+    margin-top: 22px;
   }
   // 背景
   .circles {

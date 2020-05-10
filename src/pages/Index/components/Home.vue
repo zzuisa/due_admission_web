@@ -3,28 +3,37 @@
     <div id="mainContent">
       <!-- InstanceBeginEditable name="EditRegion1" -->
       <h3>
-        <span class="brown">Your way to study in NRW (Germany)</span>
+        <span class="brown">{{$t('message.index.title')}}</span>
         <br />
       </h3>
       <p>
-        You'd like to study in Germany? A great idea! We look forward to welcoming you! You're not yet sure which university to apply to? You're interested in doing a Bachelor study and are looking for an appropriate programme? Or you're wondering how you can finance your stay, or how foreign students live in Germany and how they're supervised? We're happy to help you!
+        {{$t('message.index.p1')}}
         <br />
-        <br />We are offering a fast track to your study at the University of Duisburg-Essen which is located in NRW.
-        <br />NRW [German:
-        <em>Nordrhein-Westfalen</em>] is the most populous state of Germany.
+        <br />{{$t('message.index.p2')}}
+        <br />{{$t('message.index.p3')}}
         <br />
       </p>
       <p>
-        For the moment we have a special program
-        <a href="#/login">LOGIN</a> <a target="_blank" href="/others/FastTrack2ISE-UDE-Flyer.pdf">(program detail)</a> for Malaysian and Indonesian students who want to apply for an Engineering Study at the University of Duisburg-Essen.
-        
+        {{$t('message.index.p4')}}
+        <a href="#/login">{{$t('message.index.login_in_p')}}</a> <a target="_blank" href="/others/FastTrack2ISE-UDE-Flyer.pdf">{{$t('message.index.program_detail')}}</a> {{$t('message.index.p5')}}
+
         <br />
       </p>
-      <p>In future this programme will be extended beyond the Faculty for Engineering. Please come back!</p>
+      <p>{{$t('message.index.p6')}}</p>
       <p>
         <br />
         <br />
       </p>
+       <div class="locale-changer">
+            {{$t('message.common.change_language')}}
+            <a-select @change="saveLanguage" style="margin-left:15px" v-model="$i18n.locale">
+              <a-select-option
+                v-for="(lang, i) in langs"
+                :key="`Lang${i}`"
+                :value="lang"
+              >{{ lang==='en'?'English':'简体中文' }}</a-select-option>
+            </a-select>
+          </div>
       <!-- InstanceEndEditable -->
       <!-- end #mainContent -- >
   </div>
@@ -36,11 +45,13 @@
 
 <script>
 export default {
-  name: "Home",
-  data() {
-    return {};
+  name: 'Home',
+  data () {
+    return {
+      langs: ['cn', 'en']
+    }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -49,4 +60,10 @@ export default {
   text-align: center;
   margin: 0 auto;
 }
+  .locale-changer {
+    line-height: 35px;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 22px;
+  }
 </style>

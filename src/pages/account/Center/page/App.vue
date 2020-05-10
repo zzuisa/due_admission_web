@@ -5,7 +5,7 @@
         <a-list-item-meta>
           <a slot="title" href="#">
             <span>{{ item.event_title }}</span>
-            <a-button v-show="item.isread==='0'" style="float:right" type="primary" size="small" @click="read(item.id)">set as read</a-button>
+            <a-button v-show="item.isread==='0'" style="float:right" type="primary" size="small" @click="read(item.id)">{{$t('message.student.profile.set_as_read')}}</a-button>
           </a>
 
         </a-list-item-meta>

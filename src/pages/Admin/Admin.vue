@@ -32,9 +32,9 @@
       @form-submit="getList(1)"
       @cell-click="cellClickEvent"
     >
-     <template v-slot:toolbar_buttons>
-            <vxe-button @click="$refs.xGrid.commitProxy('save')">保存</vxe-button>
-          </template>
+      <template v-slot:toolbar_buttons>
+        <vxe-button @click="$refs.xGrid.commitProxy('save')">保存</vxe-button>
+      </template>
     </vxe-grid>
 
     <vxe-modal
@@ -61,27 +61,27 @@
       </vxe-table>
     </vxe-modal>
     <a-drawer
-      title="Send a new notification"
+      :title="$t('message.admin.edit.title')"
       :width="720"
       :visible="visible"
       :body-style="{ paddingBottom: '80px' }"
       @close="onClose"
     >
       <a-form :form="form" layout="vertical" hide-required-mark>
-        <a-form-item label="Send to">
+        <a-form-item :label="$t('message.admin.edit.send_to')">
           <a-input :value="nname" :disabled="true" />
         </a-form-item>
         <a-row :gutter="16">
           <a-col :span="20">
-            <a-form-item label="Title">
+            <a-form-item :label="$t('message.admin.edit.label_title')">
               <a-input
                 v-decorator="[
                   'eventTitle',
                   {
-                    rules: [{ required: true, message: 'Please enter title' }],
+                    rules: [{ required: true, message: $t('message.admin.edit.hint_title') }],
                   },
                 ]"
-                placeholder="Please enter title"
+                :placeholder="$t('message.admin.edit.hint_title')"
               />
             </a-form-item>
           </a-col>
@@ -93,11 +93,11 @@
                 v-decorator="[
                   'eventContent',
                   {
-                    rules: [{ required: true, message: 'Please enter content' }],
+                    rules: [{ required: true, message: $t('message.admin.edit.hint_content') }],
                   },
                 ]"
                 :rows="4"
-                placeholder="please enter content"
+                :placeholder="$t('message.admin.edit.hint_content')"
               />
             </a-form-item>
           </a-col>
@@ -105,8 +105,8 @@
         <a-row>
           <a-col>
             <a-switch
-              checked-children="upload file"
-              un-checked-children="upload file"
+              :checked-children="$t('message.admin.upload_file')"
+              :un-checked-children="$t('message.admin.edit.upload_file')"
               v-model="uswitch"
             />
           </a-col>
@@ -136,8 +136,7 @@
                     style="width: 220px"
                     @change="selectChange"
                   >
-                    <a-select-option value="lucy">Lucy</a-select-option>
-                    <a-select-option value="l">l</a-select-option>
+                    <a-select-option v-for="item in types" :value="item.name">{{item.name}}</a-select-option>
                   </a-select>
                 </a-col>
               </a-row>
@@ -158,8 +157,8 @@
           zIndex: 1,
         }"
       >
-        <a-button :style="{ marginRight: '8px' }" @click="onClose">Cancel</a-button>
-        <a-button type="primary" @click="onSubmit">Submit</a-button>
+        <a-button :style="{ marginRight: '8px' }" @click="onClose">{{$t('message.admin.edit.cancel')}}</a-button>
+        <a-button type="primary" @click="onSubmit">{{$t('message.admin.edit.submit')}}</a-button>
       </div>
     </a-drawer>
   </d2-container>
@@ -178,6 +177,7 @@ export default {
       sid: 100000,
       nname: '',
       showDetails: false,
+      types: [],
       detailData: [],
       tableData: [],
       uswitch: false,
@@ -194,13 +194,13 @@ export default {
             [
               {
                 code: 'notify',
-                name: 'notify',
+                name: i18n.t('message.admin.right_click_menu.notify'),
                 prefixIcon: 'vxe-icon--info',
                 className: 'my-copy-item'
               },
               {
                 code: 'copy',
-                name: 'copy',
+                name: i18n.t('message.admin.right_click_menu.copy'),
                 prefixIcon: 'fa fa-copy',
                 className: 'my-copy-item'
               }
@@ -208,15 +208,15 @@ export default {
             [
               {
                 code: 'detail',
-                name: 'detail'
+                name: i18n.t('message.admin.right_click_menu.detail')
               },
               {
                 code: 'marked',
-                name: 'marked as read'
+                name: i18n.t('message.admin.right_click_menu.mark_as_read')
               },
               {
                 code: 'sort',
-                name: 'sort',
+                name: i18n.t('message.admin.right_click_menu.sort'),
                 prefixIcon: 'fa fa-sort color-blue',
                 children: [
                   {
@@ -225,12 +225,12 @@ export default {
                   },
                   {
                     code: 'sortAsc',
-                    name: 'asc',
+                    name: i18n.t('message.admin.right_click_menu.asc'),
                     prefixIcon: 'fa fa-sort-alpha-asc color-orange'
                   },
                   {
                     code: 'sortDesc',
-                    name: 'desc',
+                    name: i18n.t('message.admin.right_click_menu.desc'),
                     prefixIcon: 'fa fa-sort-alpha-desc color-orange'
                   }
                 ]
@@ -636,6 +636,7 @@ export default {
   },
   mounted () {
     this.getList()
+    this.getTypes()
     // XEAjax.mockList(50).then(data => {
     //   this.tableData = data;
     //   this.loading = false;
@@ -741,27 +742,26 @@ export default {
             headers: {
               token: util.cookies.get('token')
             }
+          }).then(res => {
+            this.form.fieldsStore.fields = {}
+            this.onClose()
+            this.$message.success(i18n.t('message.common.success'))
+            if (this.uswitch) {
+              console.log('@', this.fileForm)
+              request({
+                method: 'post',
+                url: `/api/file/admin/upload`,
+                data: this.fileForm,
+                headers: {
+                  token: util.cookies.get('token')
+                }
+              }).then(r => {
+                this.file = []
+                this.uswitch = false
+                this.fileForm = {}
+              })
+            }
           })
-            .then(res => {
-              this.form.fieldsStore.fields = {}
-              this.onClose()
-              this.$message.success(i18n.t('message.common.success'))
-              if (this.uswitch) {
-                console.log('@', this.fileForm)
-                request({
-                  method: 'post',
-                  url: `/api/file/admin/upload`,
-                  data: this.fileForm,
-                  headers: {
-                    token: util.cookies.get('token')
-                  }
-                }).then(r => {
-                  this.file = []
-                  this.uswitch = false
-                  this.fileForm = {}
-                })
-              }
-            })
         }
       })
     },
@@ -850,6 +850,17 @@ export default {
       this.tablePage.currentPage = currentPage
       this.tablePage.pageSize = pageSize
       this.getList()
+    },
+    getTypes () {
+      request({
+        method: 'get',
+        url: `/api/type/list?current=1&size=99`,
+        headers: {
+          token: util.cookies.get('token')
+        }
+      }).then(res => {
+        this.types = res.content.records
+      })
     },
     notify (id) {
       request({
