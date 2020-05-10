@@ -110,30 +110,30 @@
 
 <script>
 import i18n from '@/i18n'
-import AvatarModal from "./AvatarModal";
-import request from "@/utils/request";
-import moment from "moment";
-import util from "@/libs/util.js";
-import country from "./country";
+import AvatarModal from './AvatarModal'
+import request from '@/utils/request'
+import moment from 'moment'
+import util from '@/libs/util.js'
+import country from './country'
 export default {
-  name: "Base",
+  name: 'Base',
   components: {
     AvatarModal
   },
-  data() {
+  data () {
     return {
       // cropper
       preview: {},
       country: [],
       profile: {},
-      lastName: "",
-      domain: "http://localhost:888",
-      firstName: "",
+      lastName: '',
+      domain: 'http://localhost:888',
+      firstName: '',
       option: {
-        img: "https://preview.pro.loacg.com/avatar2.jpg",
+        img: 'https://preview.pro.loacg.com/avatar2.jpg',
         info: true,
         size: 1,
-        outputType: "jpeg",
+        outputType: 'jpeg',
         canScale: false,
         autoCrop: true,
         // 只有自动截图开启 宽度高度才生效
@@ -145,102 +145,104 @@ export default {
         fixedNumber: [1, 1]
       },
       infoForm: {
-        gender: "",
-        name: "",
-        avatar: "",
-        nationality: "",
-        address: "",
-        phone: ""
+        gender: '',
+        name: '',
+        avatar: '',
+        nationality: '',
+        address: '',
+        phone: ''
       }
-    };
+    }
   },
-  mounted() {
-    this.country = country;
-    this.init();
+  mounted () {
+    this.country = country
+    this.init()
   },
   methods: {
-    init() {
-      let c = util.cookies.get("student");
+    init () {
+      let c = util.cookies.get('student')
       if (c != undefined) {
-        let student = JSON.parse(c);
-        this.profile = student;
-        this.lastName = student.name.split(" ")[0];
-        this.firstName = student.name.split(" ")[1];
-        this.infoForm = student;
+        let student = JSON.parse(c)
+        this.profile = student
+        this.lastName = student.name.split(' ')[0]
+        this.firstName = student.name.split(' ')[1]
+        this.infoForm = student
       }
-      if (this.infoForm.avatar != "" && this.infoForm.avatar != null) {
-        console.log("@", this.infoForm.avatar);
-        this.option.img = this.domain + this.infoForm.avatar;
+      if (this.infoForm.avatar !== '' && this.infoForm.avatar != null) {
+        if (this.infoForm.avatar.indexOf('http') === -1) {
+          this.option.img = this.domain + this.infoForm.avatar
+        }
       }
     },
-    onDateChange(e) {
-      this.infoForm.birthday = this.dateToString(e);
-      console.log(this.infoForm.birthday);
+    onDateChange (e) {
+      this.infoForm.birthday = this.dateToString(e)
+      console.log(this.infoForm.birthday)
     },
-    setavatar(url) {
-      let domain = "http://localhost:888";
-      this.option.img = domain + url;
-      this.infoForm.avatar = url;
+    setavatar (url) {
+      let domain = 'http://localhost:888'
+      this.option.img = domain + url
+      this.infoForm.avatar = url
     },
-    dateToString(date) {
-      var year = date.getFullYear();
-      var month = (date.getMonth() + 1).toString();
-      var day = date.getDate().toString();
+    dateToString (date) {
+      var year = date.getFullYear()
+      var month = (date.getMonth() + 1).toString()
+      var day = date.getDate().toString()
       if (month.length == 1) {
-        month = "0" + month;
+        month = '0' + month
       }
       if (day.length == 1) {
-        day = "0" + day;
+        day = '0' + day
       }
-      var dateTime = year + "-" + month + "-" + day;
-      return dateTime;
+      var dateTime = year + '-' + month + '-' + day
+      return dateTime
     },
-    onChange() {},
-    changee(e) {
-      console.log(e);
+    onChange () {},
+    changee (e) {
+      console.log(e)
     },
-    submitForm(e) {
-      let _this = this;
-      if (_this.lastName == "" || _this.lastName == null) {
-        this.$message.error("Please fill in lastname");
-        return false;
+    submitForm (e) {
+      let _this = this
+      if (_this.lastName == '' || _this.lastName == null) {
+        this.$message.error('Please fill in lastname')
+        return false
       }
-      if (_this.firstName == "" || _this.firstName == null) {
-        this.$message.error("Please fill in firstName");
-        return false;
+      if (_this.firstName == '' || _this.firstName == null) {
+        this.$message.error('Please fill in firstName')
+        return false
       }
       this.$refs[e].validate(valid => {
         if (valid) {
-          let name = _this.lastName + " " + _this.firstName;
-          _this.infoForm.name = name;
-          let url = "/api/member/new";
+          let name = _this.lastName + ' ' + _this.firstName
+          _this.infoForm.name = name
+          let url = '/api/member/new'
           request({
             url,
-            method: "put",
+            method: 'put',
             data: _this.infoForm,
             headers: {
-              token: util.cookies.get("token"),
-              "Content-Type": "application/json"
+              token: util.cookies.get('token'),
+              'Content-Type': 'application/json'
             }
           })
             .then(res => {
+              console.log('cookie', res)
               this.$message({
                 message: i18n.t('message.common.success'),
-                type: "success"
-              });
-              util.cookies.set("student", res.content);
-              _this.init();
+                type: 'success'
+              })
+              util.cookies.set('student', res.content)
+              _this.init()
             })
             .catch(e => {
-              this.$message.error(e);
-            });
+              this.$message.error(e)
+            })
         } else {
-          return false;
+          return false
         }
-      });
+      })
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>
