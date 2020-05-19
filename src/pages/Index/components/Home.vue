@@ -44,14 +44,22 @@
 </template>
 
 <script>
+import util from '@/libs/util.js'
+
 export default {
   name: 'Home',
   data () {
     return {
       langs: ['cn', 'en']
     }
+  },
+  methods: {
+    saveLanguage (e) {
+      util.cookies.set('locale', e)
+    }
   }
 }
+
 </script>
 
 <style lang="scss" scoped>
