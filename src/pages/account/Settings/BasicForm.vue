@@ -129,11 +129,13 @@
 import util from '@/libs/util.js'
 import request from '@/utils/request'
 import i18n from '@/i18n'
+import setting from '@/setting'
 export default {
   name: 'BaseForm',
   data () {
     return {
       // cropper
+      domain: setting.domain,
       preview: {},
       country: [],
       headers: {
@@ -145,14 +147,14 @@ export default {
       gerFile: [],
       uploading: false,
       infoForm: {
-        apsid: '',
-        apsPassed: '',
-        gerExam: '',
-        cet6: '',
-        cet4: '',
-        examAuthFile: '',
-        apsAuthFile: '',
-        passport: ''
+        apsid: null,
+        apsPassed: null,
+        gerExam: null,
+        cet6: null,
+        cet4: null,
+        examAuthFile: null,
+        apsAuthFile: null,
+        passport: null
       }
     }
   },
@@ -163,7 +165,6 @@ export default {
   methods: {
     init () {
       console.log('base init')
-      let domain = 'http://localhost:888'
       let thumb =
         'https://www.pngitem.com/pimgs/m/499-4997293_pdf-file-icon-png-transparent-png.png'
       let c = util.cookies.get('student')
@@ -179,7 +180,7 @@ export default {
             uid: '-1',
             name: 'aps',
             status: 'done',
-            url: domain + student.apsAuthFile,
+            url: this.domain + student.apsAuthFile,
             thumbUrl: thumb
           }
         ]
@@ -191,7 +192,7 @@ export default {
             uid: '-1',
             name: 'ger',
             status: 'done',
-            url: domain + student.examAuthFile,
+            url: this.domain + student.examAuthFile,
             thumbUrl: thumb
           }
         ]
@@ -203,7 +204,7 @@ export default {
             uid: '-1',
             name: 'passport',
             status: 'done',
-            url: domain + student.passport,
+            url: this.domain + student.passport,
             thumbUrl: thumb
           }
         ]

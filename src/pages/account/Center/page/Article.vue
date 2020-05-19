@@ -31,7 +31,7 @@
           <a-avatar class="card-avatar" slot="avatar" :src="pdf" size="large" />
         </a-card-meta>
         <template class="ant-card-actions" slot="actions">
-          <a _target="blank" :href="setting.domain+item.path">
+          <a _target="blank" :href="domain+item.path">
             <a-icon type="download" />
           </a>
         </template>
@@ -54,7 +54,7 @@ export default {
   data () {
     return {
       loading: true,
-      setting: setting,
+      domain: setting.domain,
       pdf: pdf,
       loadingMore: false,
       rData: [],
@@ -72,7 +72,6 @@ export default {
   },
   methods: {
     getList () {
-      let domain = 'http://localhost:888'
       request({
         url: '/api/member/getfiles',
         method: 'get',
@@ -99,7 +98,7 @@ export default {
           this.dataSource.push({
             title: d[i],
             avatar: pdf,
-            url: domain + data[i]
+            url: this.domain + data[i]
           })
         }
       })

@@ -6,7 +6,8 @@ export default {
     error: {
       not_login: 'Not logged in, or the login credentials have expired, please log in again',
       not_activate: 'Not activated, please check your mailbox and activate before logging in',
-      others: 'operation failed'
+      login_failed: 'wrong username or password!',
+      others: 'operation failed!'
     },
     index: {
       tabs: {

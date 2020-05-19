@@ -4,6 +4,7 @@ export default {
     error: {
       not_login: '未登录，或登录凭证已过期，请重新登录！',
       not_activate: '未激活，登录前请确认您的邮箱并激活！',
+      login_failed: '用户名或密码错误！',
       others: '操作失败！'
     },
     index: {

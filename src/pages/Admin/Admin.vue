@@ -105,7 +105,7 @@
         <a-row>
           <a-col>
             <a-switch
-              :checked-children="$t('message.admin.upload_file')"
+              :checked-children="$t('message.admin.edit.upload_file')"
               :un-checked-children="$t('message.admin.edit.upload_file')"
               v-model="uswitch"
             />
@@ -169,9 +169,11 @@ import XEClipboard from 'xe-clipboard'
 import request from '@/utils/request'
 import util from '@/libs/util.js'
 import i18n from '@/i18n'
+import setting from '@/setting'
 export default {
   data () {
     return {
+      domain: setting.domain,
       form: this.$form.createForm(this),
       nid: 1,
       sid: 100000,
@@ -554,7 +556,6 @@ export default {
           slots: {
             // 使用 JSX 渲染
             default: ({ row }) => {
-              let domain = 'http://localhost:888'
               if (row.nationality != 'China') {
                 return '░░░░'
               } else if (row.aps_auth_file == null || row.aps_auth_file == '') {
@@ -565,7 +566,7 @@ export default {
                 ]
               }
               return [
-                <a href={domain + row.aps_auth_file}>
+                <a href={this.domain + row.aps_auth_file}>
                   <a-avatar
                     shape="square"
                     src="https://www.pngitem.com/pimgs/m/499-4997293_pdf-file-icon-png-transparent-png.png"
@@ -583,7 +584,6 @@ export default {
           slots: {
             // 使用 JSX 渲染
             default: ({ row }) => {
-              let domain = 'http://localhost:888'
               if (row.exam_auth_file == null || row.exam_auth_file == '') {
                 return [
                   <el-tag type="warning">
@@ -592,7 +592,7 @@ export default {
                 ]
               }
               return [
-                <a href={domain + row.exam_auth_file}>
+                <a target="_blank" href={this.domain + row.exam_auth_file}>
                   <a-avatar
                     shape="square"
                     src="https://www.pngitem.com/pimgs/m/499-4997293_pdf-file-icon-png-transparent-png.png"
@@ -617,9 +617,9 @@ export default {
                   </el-tag>
                 ]
               }
-              let domain = 'http://localhost:888'
+
               return [
-                <a href={domain + row.passport}>
+                <a href={this.domain + row.passport}>
                   <a-avatar
                     shape="square"
                     src="https://www.pngitem.com/pimgs/m/499-4997293_pdf-file-icon-png-transparent-png.png"
@@ -635,6 +635,7 @@ export default {
     }
   },
   mounted () {
+    console.log(this.domain)
     this.getList()
     this.getTypes()
     // XEAjax.mockList(50).then(data => {

@@ -123,30 +123,31 @@
 </template>
 
 <script>
-import { timeFix } from "@/utils/util";
-import { mapState } from "vuex";
-import $http from "axios";
-import { PageView } from "@/layouts/PageView/PageView";
-import HeadInfo from "./componnets/HeadInfo/HeadInfo";
-import { Radar } from "./componnets/Charts/Radar";
-
-import { getRoleList, getServiceList } from "@/api/manage";
-import util from "@/libs/util.js";
-const DataSet = [];
+import { timeFix } from '@/utils/util'
+import { mapState } from 'vuex'
+import $http from 'axios'
+import { PageView } from '@/layouts/PageView/PageView'
+import HeadInfo from './componnets/HeadInfo/HeadInfo'
+import { Radar } from './componnets/Charts/Radar'
+import setting from '@/setting'
+import { getRoleList, getServiceList } from '@/api/manage'
+import util from '@/libs/util.js'
+const DataSet = []
 
 export default {
-  name: "Workplace",
+  name: 'Workplace',
   components: {
     PageView,
     HeadInfo,
     Radar
   },
-  data() {
+  data () {
     return {
       timeFix: timeFix(),
-      avatar: "",
+      domain: setting.domain,
+      avatar: '',
       user: {},
-      welcome: "准备吃什么呢?",
+      welcome: '准备吃什么呢?',
       projects: [],
       loading: true,
       radarLoading: true,
@@ -155,7 +156,7 @@ export default {
 
       // data
       axis1Opts: {
-        dataKey: "item",
+        dataKey: 'item',
         line: null,
         tickLine: null,
         grid: {
@@ -166,11 +167,11 @@ export default {
         }
       },
       axis2Opts: {
-        dataKey: "score",
+        dataKey: 'score',
         line: null,
         tickLine: null,
         grid: {
-          type: "polygon",
+          type: 'polygon',
           lineStyle: {
             lineDash: null
           }
@@ -178,46 +179,45 @@ export default {
       },
       scale: [
         {
-          dataKey: "score",
+          dataKey: 'score',
           min: 0,
           max: 80
         }
       ],
       axisData: [
-        { item: "引用", a: 70, b: 30, c: 40 },
-        { item: "口碑", a: 60, b: 70, c: 40 },
-        { item: "产量", a: 50, b: 60, c: 40 },
-        { item: "贡献", a: 40, b: 50, c: 40 },
-        { item: "热度", a: 60, b: 70, c: 40 },
-        { item: "引用", a: 70, b: 50, c: 40 }
+        { item: '引用', a: 70, b: 30, c: 40 },
+        { item: '口碑', a: 60, b: 70, c: 40 },
+        { item: '产量', a: 50, b: 60, c: 40 },
+        { item: '贡献', a: 40, b: 50, c: 40 },
+        { item: '热度', a: 60, b: 70, c: 40 },
+        { item: '引用', a: 70, b: 50, c: 40 }
       ],
       radarData: []
-    };
+    }
   },
   computed: {
     // ...mapState({
     //   nickname: state => state.user.nickname,
     //   welcome: state => state.user.welcome
     // }),
-    userInfo() {
-      return this.$store.getters.userInfo;
+    userInfo () {
+      return this.$store.getters.userInfo
     }
   },
-  created() {
+  created () {
     // this.user = this.userInfo
     // this.avatar = this.userInfo.avatar
   },
-  mounted() {
-    let user = JSON.parse(util.cookies.get("student"));
-    let account = JSON.parse(util.cookies.get("user"));
-    console.log("user", user);
-    this.user = user;
-    let domain = "http://localhost:888";
-    this.account = account;
-    if (user.avatar == null || user.avatar == "") {
-      this.user.avatar = "https://preview.pro.loacg.com/avatar2.jpg";
+  mounted () {
+    let user = JSON.parse(util.cookies.get('student'))
+    let account = JSON.parse(util.cookies.get('user'))
+    console.log('user', user)
+    this.user = user
+    this.account = account
+    if (user.avatar == null || user.avatar == '') {
+      this.user.avatar = 'https://preview.pro.loacg.com/avatar2.jpg'
     } else {
-      this.user.avatar = domain + this.user.avatar;
+      this.user.avatar = this.domain + this.user.avatar
     }
     // this.getProjects();
     // this.getActivity();
@@ -225,23 +225,23 @@ export default {
     // this.initRadar();
   },
   methods: {
-    getProjects() {
-      this.$http.get("/list/search/projects").then(res => {
-        this.projects = res.result && res.result.data;
-        this.loading = false;
-      });
+    getProjects () {
+      this.$http.get('/list/search/projects').then(res => {
+        this.projects = res.result && res.result.data
+        this.loading = false
+      })
     },
-    getActivity() {
-      this.$http.get("/workplace/activity").then(res => {
-        this.activities = res.result;
-      });
+    getActivity () {
+      this.$http.get('/workplace/activity').then(res => {
+        this.activities = res.result
+      })
     },
-    getTeams() {
-      this.$http.get("/workplace/teams").then(res => {
-        this.teams = res.result;
-      });
+    getTeams () {
+      this.$http.get('/workplace/teams').then(res => {
+        this.teams = res.result
+      })
     },
-    initRadar() {
+    initRadar () {
       // this.radarLoading = true
       // this.$http.get('/workplace/radar')
       //   .then(res => {
@@ -257,7 +257,7 @@ export default {
       //   })
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>

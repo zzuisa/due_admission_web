@@ -103,6 +103,7 @@ import i18n from '@/i18n'
 import request from '@/utils/request'
 import { mapGetters } from 'vuex'
 import util from '@/libs/util.js'
+import setting from '@/setting'
 export default {
   name: 'Center',
   components: {
@@ -112,6 +113,7 @@ export default {
   },
   data () {
     return {
+      domain: setting.domain,
       tags: i18n.t('message.student.profile.tags').split(','),
       user: {},
       account: {},
@@ -138,7 +140,6 @@ export default {
     if (account.username == 'admin') {
       this.$router.push({ path: '/admin/stidemt' })
     }
-    let domain = 'http://localhost:888'
     this.account = account
     if (this.user.avatar == null || this.user.avatar == '') {
       this.user.avatar = 'https://preview.pro.loacg.com/avatar2.jpg'
@@ -146,7 +147,7 @@ export default {
       this.user.avatar == 'https://preview.pro.loacg.com/avatar2.jpg'
     ) {
     } else {
-      this.user.avatar = domain + this.user.avatar
+      this.user.avatar = this.domain + this.user.avatar
     }
   },
   methods: {

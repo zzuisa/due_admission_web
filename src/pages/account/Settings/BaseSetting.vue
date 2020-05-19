@@ -115,6 +115,7 @@ import request from '@/utils/request'
 import moment from 'moment'
 import util from '@/libs/util.js'
 import country from './country'
+import setting from '@/setting'
 export default {
   name: 'Base',
   components: {
@@ -127,7 +128,7 @@ export default {
       country: [],
       profile: {},
       lastName: '',
-      domain: 'http://localhost:888',
+      domain: setting.domain,
       firstName: '',
       option: {
         img: 'https://preview.pro.loacg.com/avatar2.jpg',
@@ -179,8 +180,7 @@ export default {
       console.log(this.infoForm.birthday)
     },
     setavatar (url) {
-      let domain = 'http://localhost:888'
-      this.option.img = domain + url
+      this.option.img = this.domain + url
       this.infoForm.avatar = url
     },
     dateToString (date) {

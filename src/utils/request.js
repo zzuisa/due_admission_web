@@ -73,6 +73,12 @@ service.interceptors.response.use(
           type: 'error',
           duration: 2 * 1000
         })
+      } else if (res.code == 4) {
+        Message({
+          message: i18n.t('message.error.login_failed'),
+          type: 'error',
+          duration: 2 * 1000
+        })
       }
 
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
