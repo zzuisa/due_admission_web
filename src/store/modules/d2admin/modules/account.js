@@ -19,7 +19,7 @@ export default {
      * @param {Object} param password {String} 密码
      * @param {Object} param route {Object} 登录成功后定向的路由对象 任何 vue-router 支持的格式
      */
-    login({
+    login ({
       commit,
       dispatch
     }, {
@@ -29,9 +29,9 @@ export default {
       return new Promise((resolve, reject) => {
         // 开始请求登录接口
         AccountLogin({
-            username,
-            password
-          })
+          username,
+          password
+        })
           .then(async res => {
             let _this = this
             // 设置 cookie 一定要存 uuid 和 token 两个 cookie
@@ -48,7 +48,7 @@ export default {
               root: true
             })
             // 用户登录后从持久化数据加载一系列的设置
-         
+
             await dispatch('load')
             // 结束
             resolve()
@@ -64,7 +64,7 @@ export default {
      * @param {Object} param context
      * @param {Object} param confirm {Boolean} 是否需要确认
      */
-    logout({
+    logout ({
       commit,
       dispatch
     }, {
@@ -73,13 +73,16 @@ export default {
       /**
        * @description 注销
        */
-      async function logout() {
+      async function logout () {
         // 删除cookie
         util.cookies.remove('token')
         util.cookies.remove('user')
         util.cookies.remove('student')
         // 清空 vuex 用户信息
         await dispatch('d2admin/user/set', {}, {
+          root: true
+        })
+        await dispatch('d2admin/page/closeAll', {}, {
           root: true
         })
         // 跳转路由
@@ -93,14 +96,15 @@ export default {
           root: true
         })
         MessageBox.confirm(i18n.t('message.student.login.logout_tip'), i18n.t('message.student.login.confirm_to_logout'), {
-            confirmButtonText: i18n.t('message.student.login.confirm_to_logout'),
-            cancelButtonText: i18n.t('message.student.login.cancel'),
-            type: 'warning'
-          })
+          confirmButtonText: i18n.t('message.student.login.confirm_to_logout'),
+          cancelButtonText: i18n.t('message.student.login.cancel'),
+          type: 'warning'
+        })
           .then(() => {
             commit('d2admin/gray/set', false, {
               root: true
             })
+
             logout()
           })
           .catch(() => {
@@ -108,7 +112,7 @@ export default {
               root: true
             })
             Message({
-              message: i18n.t('message.student.login.cancel_tip')
+              message: i18n.t('message.student.login.cencel_tip')
             })
           })
       } else {
@@ -119,7 +123,7 @@ export default {
      * @description 用户登录后从持久化数据加载一系列的设置
      * @param {Object} state vuex state
      */
-    load({
+    load ({
       dispatch
     }) {
       return new Promise(async resolve => {
@@ -136,9 +140,9 @@ export default {
           root: true
         })
         // DB -> store 持久化数据加载上次退出时的多页列表
-        await dispatch('d2admin/page/openedLoad', null, {
-          root: true
-        })
+        // await dispatch('d2admin/page/openedLoad', null, {
+        //   root: true
+        // })
         // DB -> store 持久化数据加载侧边栏折叠状态
         await dispatch('d2admin/menu/asideCollapseLoad', null, {
           root: true

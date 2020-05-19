@@ -10,29 +10,30 @@
 </template>
 
 <script>
-import util from "@/libs/util.js";
-import { mapState, mapActions } from "vuex";
+import util from '@/libs/util.js'
+import { mapState, mapActions } from 'vuex'
 export default {
-  data(){
-    return{
-      info:{}
+  data () {
+    return {
+      info: {}
     }
   },
-  mounted() {
-    let user = util.cookies.get("user");
+  mounted () {
+    let user = util.cookies.get('user')
     this.info = JSON.parse(user)
-    console.log("u",JSON.parse(user))
+    console.log('u', JSON.parse(user))
   },
   methods: {
-    ...mapActions("d2admin/account", ["logout"]),
+    ...mapActions('d2admin/account', ['logout']),
+
     /**
      * @description 登出
      */
-    logOff() {
+    logOff () {
       this.logout({
         confirm: true
-      });
+      })
     }
   }
-};
+}
 </script>

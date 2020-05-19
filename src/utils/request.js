@@ -6,7 +6,6 @@ import {
 import store from '@/store'
 import i18n from '@/i18n'
 import util from '@/libs/util.js'
-
 // create an axios instance
 const service = axios.create({
   withCredentials: true, // send cookies when cross-domain requests
@@ -62,11 +61,20 @@ service.interceptors.response.use(
         util.cookies.remove('student')
         window.location.href = ('#/login')
       } else if (res.code == 2) {
-        Message({
-          message: i18n.t('message.error.others'),
-          type: 'error',
-          duration: 2 * 1000
-        })
+        axios.get(`google/translate_a/single?client=gtx&sl=zh-CN&tl=en&dt=t&q=${res.content}`).then(r => {
+          console.log(r, i18n.locale)
+          Message({
+            message: i18n.locale === 'en' ? r.data[0][0][0] : r.data[0][0][1],
+            type: 'error',
+            duration: 2 * 1000
+          })
+        }).catch(() => [
+          Message({
+            message: res.content,
+            type: 'error',
+            duration: 2 * 1000
+          })
+        ])
       } else if (res.code == 3) {
         Message({
           message: i18n.t('message.error.not_activate'),

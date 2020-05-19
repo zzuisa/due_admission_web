@@ -313,7 +313,7 @@ export default {
                   message: i18n.t('message.student.login.success'),
                   type: 'success'
                 })
-                let path = '/'
+                let path = '/profile'
                 if (res.content.member.username == 'admin') {
                   this.$store.commit('d2admin/menu/asideSet', menuAside2)
                   path = '/admin/student'

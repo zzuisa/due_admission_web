@@ -15,7 +15,7 @@
         }"
         flex-box="0"
         flex>
-        <div class="logo-group" :style="{width: asideCollapse ? asideWidthCollapse : asideWidth}" flex-box="0">
+        <div @click="()=>{this.$router.push({path:'/index'})}" class="logo-group" :style="{width: asideCollapse ? asideWidthCollapse : asideWidth}" flex-box="0">
           <img v-if="asideCollapse" :src="`${$baseUrl}image/theme/${themeActiveSetting.name}/logo/icon-only.png`">
           <img style="width:200px" v-else :src="`${$baseUrl}image/theme/${themeActiveSetting.name}/logo/all.png`">
         </div>
@@ -158,5 +158,8 @@ export default {
 <style>
 .d2-layout-header-aside-group .d2-layout-header-aside-content .d2-theme-header .logo-group{
   text-align:left;
+}
+.logo-group:hover{
+  cursor: pointer;
 }
 </style>
