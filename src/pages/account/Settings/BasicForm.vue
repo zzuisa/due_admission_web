@@ -6,11 +6,11 @@
           <div style="margin-bottom: 16px" v-if="profile.nationality=='China'">
             <a-row :gutter="24">
               <a-col span="12">
-                <a-input v-model="infoForm.cet4" addonBefore="CRT-4" />
+                <a-input v-model="infoForm.cet4" addonBefore="CET-4" />
               </a-col>
               <a-col span="12">
                 <a-form-item>
-                  <a-input v-model="infoForm.cet6" addonBefore="CRT-6" />
+                  <a-input v-model="infoForm.cet6" addonBefore="CET-6" />
                 </a-form-item>
               </a-col>
             </a-row>
