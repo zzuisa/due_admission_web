@@ -376,7 +376,6 @@ export default {
 .transition-box {
   margin-bottom: 10px;
   border-radius: 4px;
-  background-color: #409eff;
   text-align: center;
   color: #fff;
   box-sizing: border-box;

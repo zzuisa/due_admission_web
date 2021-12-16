@@ -13,12 +13,26 @@ process.env.VUE_APP_BUILD_TIME = require('dayjs')().format('YYYY-M-D HH:mm:ss')
 let publicPath = process.env.VUE_APP_PUBLIC_PATH || '/'
 
 module.exports = {
+
   publicPath, // 根据你的实际情况更改这里
   lintOnSave: true,
   devServer: {
     port: 8000,
-
-    publicPath // 和 publicPath 保持一致
+    publicPath, // 和 publicPath 保持一致
+    proxy: {
+      '/api': {
+        // 把 localhost:8080 代理为下面的地址
+        target: 'http://localhost:888', // localhost:8080代理为这个地址
+        secure: false, // 如果是https，需要配置true
+        changeOrigin: true, // 是否跨域
+        pathRewrite: { // 重写，如果开发环境地址中不需要service-core，那么可以将其重写为''
+          '^/api': ''
+        }
+      }
+      // 想要代理的地址：'localhost:8080/service-core/wechat/serviceAccount/qrCode/create'
+      // 代理后的地址 'https://test.eastgrain.cn/service-core/wechat/serviceAccount/qrCode/create'
+      // axios 请求接口写法 axios.get('/service-core/wechat/serviceAccount/qrCode/create')...
+    }
   },
   css: {
     loaderOptions: {
@@ -43,6 +57,7 @@ module.exports = {
     config.resolve
       .symlinks(true)
     config
+
       // 开发环境
       .when(process.env.NODE_ENV === 'development',
         // sourcemap不包含列信息
